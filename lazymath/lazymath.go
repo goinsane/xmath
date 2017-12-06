@@ -30,7 +30,19 @@ func RoundP(x float64, p int) float64 {
 	return Round(x*k) / k
 }*/
 
-// MinMax returns the min, max values with this order.
+// MinMax returns the min, max values in this order.
 func MinMax(x, y float64) (float64, float64) {
 	return math.Min(x, y), math.Max(x, y)
+}
+
+// BetweenRange checks x is between a and b
+func BetweenRange(x float64, a, b float64) bool {
+	min, max := math.Min(a, b), math.Max(a, b)
+	return min < a && a < max
+}
+
+// InRange checks x is in a and b
+func InRange(x float64, a, b float64) bool {
+	min, max := math.Min(a, b), math.Max(a, b)
+	return min <= a && a <= max
 }
