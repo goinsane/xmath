@@ -7,6 +7,10 @@ Duplicate, ...
 * github.com/orkunkaraduman/lazygo/lazycore
 * github.com/orkunkaraduman/lazygo/lazymath
 
+## Author
+
+Orkun Karaduman <orkunkaraduman@gmail.com>
+
 ## License
 
 [MIT License](LICENSE)
