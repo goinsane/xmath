@@ -15,5 +15,7 @@ func main() {
 	fmt.Printf("Pi round: %f\n", lazymath.Round(math.Pi))
 	fmt.Printf("Square root of 2 is %f\n", math.Sqrt2)
 	mn, mx := lazymath.MinMax(math.Pi, math.Sqrt2)
-	fmt.Printf("Between Pi and Sqrt2: Min=%f, Max=%f\n", mn, mx)
+	fmt.Printf("Pi and Sqrt2: Min=%f, Max=%f\n", mn, mx)
+	fmt.Printf("Is 2.4 between 3 and 2.4: %v\n", lazymath.Between(2.4, 3, 2.4))
+	fmt.Printf("Is 2.4 between in 3 and 2.4: %v\n", lazymath.BetweenIn(2.4, 3, 2.4))
 }
