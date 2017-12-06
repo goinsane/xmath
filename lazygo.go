@@ -5,6 +5,7 @@ import (
 	"unsafe"
 )
 
+// Duplicate returns the pointer of duplicated value of i.
 func Duplicate(i interface{}) interface{} {
 	t := reflect.TypeOf(i)
 	src := reflect.Indirect(reflect.ValueOf(&i)).InterfaceData()[1]
