@@ -1,0 +1,17 @@
+*.bak
+*.old
+*~
+*.cache
+*.swap
+*.swp
+
+*.DS_Store
+
+*.project
+*.includepath
+*.settings
+
+*.sublime-project
+*.sublime-workspace
+
+*.idea
