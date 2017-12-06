@@ -14,12 +14,12 @@ func CeilP(x float64, p int) float64 {
 	return math.Ceil(x*k) / k
 }
 
-// Round returns the integer value rounded to x.
+// Round returns the integer value rounded by x.
 func Round(x float64) float64 {
 	return math.Floor(x + 0.5)
 }
 
-// RoundP returns the value rounded to x with specified precision.
+// RoundP returns the value rounded by x with specified precision.
 func RoundP(x float64, p int) float64 {
 	k := math.Pow10(p)
 	return math.Floor(x*k+0.5) / k
