@@ -1,4 +1,4 @@
-package lazygo
+package lazycore
 
 import (
 	"reflect"
