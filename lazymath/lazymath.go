@@ -5,7 +5,6 @@ import "math"
 // FloorP returns the greatest value less than or equal to x with specified precision.
 func FloorP(x float64, p int) float64 {
 	k := math.Pow10(p)
-	math.Sqrt()
 	return math.Floor(x*k) / k
 }
 
