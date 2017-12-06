@@ -1,9 +1,9 @@
 # LazyGO
 
-LazyGo is Go util library for some missing functions, like Round,
+LazyGo is Go util repository for some missing functions like Round,
 Duplicate, ...
 
-#### Libraries
+#### Packages
 * github.com/orkunkaraduman/lazygo
 * github.com/orkunkaraduman/lazygo/lazymath
 
