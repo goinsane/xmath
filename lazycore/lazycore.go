@@ -1,16 +1,25 @@
 package lazycore
 
 import (
+	"errors"
 	"reflect"
 	"unsafe"
-	"github.com/pkg/errors"
 )
 
 // Duplicate returns the pointer of duplicated value of i.
 func Duplicate(i interface{}) interface{} {
 	t := reflect.TypeOf(i)
-	src := reflect.Indirect(reflect.ValueOf(&i)).InterfaceData()[1]
+	if t == nil {
+		return nil
+	}
 	r := reflect.New(t)
+	id := reflect.Indirect(reflect.ValueOf(&i)).InterfaceData()
+	var src uintptr
+	if t.Kind() != reflect.Ptr {
+		src = id[1]
+	} else {
+		src = uintptr(unsafe.Pointer(&id[1]))
+	}
 	dst := r.Pointer()
 	en := src + t.Size()
 	for src < en {
@@ -23,6 +32,9 @@ func Duplicate(i interface{}) interface{} {
 
 // Index returns the index s from v. If not found return -1. Panics v is not array or slice.
 func Index(v interface{}, s interface{}) int {
+	if v == nil {
+		return -1
+	}
 	rv := reflect.ValueOf(v)
 	if k := rv.Type().Kind(); k == reflect.Ptr {
 		rv = reflect.Indirect(rv)
@@ -30,7 +42,7 @@ func Index(v interface{}, s interface{}) int {
 	if k := rv.Type().Kind(); k != reflect.Array && k != reflect.Slice {
 		panic(errors.New("v must be Array or Slice"))
 	}
-	for i := 0; i < rv.Len(); i++ {
+	for i, l := 0, rv.Len(); i < l; i++ {
 		if reflect.DeepEqual(rv.Index(i).Interface(), s) {
 			return i
 		}
@@ -39,7 +51,10 @@ func Index(v interface{}, s interface{}) int {
 }
 
 // Each returns the keys slice and values slice from v. Panics v is not map.
-func Each(v interface{}) ([]interface{}, []interface{}) {
+func Each(v interface{}) (keys []interface{}, values []interface{}) {
+	if v == nil {
+		return
+	}
 	rv := reflect.ValueOf(v)
 	if k := rv.Type().Kind(); k == reflect.Ptr {
 		rv = reflect.Indirect(rv)
@@ -47,14 +62,12 @@ func Each(v interface{}) ([]interface{}, []interface{}) {
 	if k := rv.Type().Kind(); k != reflect.Map {
 		panic(errors.New("v must be Map"))
 	}
-	var keys []interface{}
-	var vals []interface{}
 	rkeys := rv.MapKeys()
 	for _, rkey := range rkeys {
 		keys = append(keys, rkey.Interface())
-		vals = append(vals, rv.MapIndex(rkey).Interface())
+		values = append(values, rv.MapIndex(rkey).Interface())
 	}
-	return keys, vals
+	return
 }
 
 // Keys returns the keys slice from v. Panics v is not map.

@@ -1,6 +1,6 @@
-# LazyGO
+# LazyGo
 
-LazyGo is Go util repository for some missing functions like Round,
+LazyGo is Go util repository for some missing functions such as Round,
 Duplicate, ...
 
 #### Packages
