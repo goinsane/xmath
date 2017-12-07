@@ -12,14 +12,14 @@ func Duplicate(i interface{}) interface{} {
 	if t == nil {
 		return nil
 	}
-	//src := reflect.Indirect(reflect.ValueOf(&i)).InterfaceData()[1]
+	r := reflect.New(t)
+	id := reflect.Indirect(reflect.ValueOf(&i)).InterfaceData()
 	var src uintptr
 	if t.Kind() != reflect.Ptr {
-		src = *(*uintptr)(unsafe.Pointer(uintptr(unsafe.Pointer(&i)) + unsafe.Sizeof(uintptr(0))))
+		src = id[1]
 	} else {
-		src = uintptr(unsafe.Pointer(&i)) + unsafe.Sizeof(uintptr(0))
+		src = uintptr(unsafe.Pointer(&id[1]))
 	}
-	r := reflect.New(t)
 	dst := r.Pointer()
 	en := src + t.Size()
 	for src < en {
