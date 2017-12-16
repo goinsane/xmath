@@ -1,4 +1,4 @@
-package lazycore
+package lazygo
 
 import (
 	"errors"
