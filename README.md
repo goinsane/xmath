@@ -1,11 +1,14 @@
 # LazyGo
 
-LazyGo is Go util repository for some missing functions such as Round,
-Duplicate, ...
+LazyGo is Go utility repository for some desired functions such as math.Round, ...
 
 #### Packages
-* github.com/orkunkaraduman/lazygo
-* github.com/orkunkaraduman/lazygo/lazymath
+
+All of the packages in this repository has prefix 'lazy'. Go standard library name follows 'lazy' prefix.
+There is an exception for 'lazygo' package. 'lazygo' package includes some desired builtin functions.
+
+* **lazygo** github.com/orkunkaraduman/lazygo
+* **lazymath** github.com/orkunkaraduman/lazygo/lazymath
 
 ## Author
 
