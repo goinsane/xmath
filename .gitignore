@@ -4,14 +4,24 @@
 *.cache
 *.swap
 *.swp
+*.temp
+*.tmp
+
+*.o
+*.a
+*.so
+*.exe
+*.dll
+*.py[co]
 
 *.DS_Store
 
 *.project
 *.includepath
 *.settings
-
 *.sublime-project
 *.sublime-workspace
-
 *.idea
+*.vscode
+
+/vendor
