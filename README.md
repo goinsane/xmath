@@ -1,19 +1,5 @@
-# LazyGo
+# xmath
 
-LazyGo is Go utility repository for some desired functions such as math.Round, ...
+[![GoDoc](https://godoc.org/github.com/goinsane/xmath?status.svg)](https://godoc.org/github.com/goinsane/xmath)
 
-#### Packages
-
-All of the packages in this repository has prefix 'lazy'. Go standard library name follows 'lazy' prefix.
-There is an exception for 'lazygo' package. 'lazygo' package includes some desired builtin functions.
-
-* **lazygo** github.com/orkunkaraduman/lazygo
-* **lazymath** github.com/orkunkaraduman/lazygo/lazymath
-
-## Author
-
-Orkun Karaduman <orkunkaraduman@gmail.com>
-
-## License
-
-[MIT License](LICENSE)
+Package xmath provides some extended capabilities according to GoLang's math.
