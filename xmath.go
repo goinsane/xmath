@@ -37,12 +37,12 @@ func MinMax(x, y float64) (min float64, max float64) {
 
 // Between checks x is between a and b
 func Between(x float64, a, b float64) bool {
-	min, max := math.Min(a, b), math.Max(a, b)
+	min, max := MinMax(a, b)
 	return min < x && x < max
 }
 
 // BetweenIn checks x is in a and b
 func BetweenIn(x float64, a, b float64) bool {
-	min, max := math.Min(a, b), math.Max(a, b)
+	min, max := MinMax(a, b)
 	return min <= x && x <= max
 }
