@@ -28,7 +28,11 @@ func RoundP(x float64, p int) float64 {
 
 // MinMax returns the min, max values in this order.
 func MinMax(x, y float64) (min float64, max float64) {
-	return math.Min(x, y), math.Max(x, y)
+	if x < y {
+		return x, y
+	} else {
+		return y, x
+	}
 }
 
 // Between checks x is between a and b
