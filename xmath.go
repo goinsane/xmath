@@ -54,13 +54,17 @@ func BetweenIn(x float64, a, b float64) bool {
 // SafeDiv divides x to y without 'division by zero' error.
 // Using this function is not necessary in GoLang. Because GoLang's default behaviour is same with this function.
 // Special cases are:
-//	SafeDiv(0, ±n) = ±0
-//	SafeDiv(±n, 0) = ±Inf
-//	SafeDiv(0, 0) = NaN
-func SafeDiv(x, y float64) float64 {
+//	SafeDiv(0, ±n, true) = ±0
+//	SafeDiv(±n, 0, true) = ±Inf
+//	SafeDiv(0, 0, true) = NaN
+//	SafeDiv(0, 0, false) = 0
+func SafeDiv(x, y float64, allowNaN bool) float64 {
 	if y == 0 {
 		if x == 0 {
-			return math.NaN()
+			if allowNaN {
+				return math.NaN()
+			}
+			return 0
 		}
 		if x < 0 {
 			return math.Inf(-1)
