@@ -30,13 +30,119 @@ func RoundP(x float64, p int) float64 {
 	return math.Floor(x*k+0.5) / k
 }
 
-// MinMax returns the min, max values in this order.
-func MinMax(x, y float64) (min float64, max float64) {
-	if x < y {
-		return x, y
-	} else {
-		return y, x
+// Min returns the smaller of x...
+//
+// Special cases are:
+//	Min(x, -Inf) = Min(-Inf, x) = -Inf
+//	Min(x, NaN) = Min(NaN, x) = NaN
+//	Min(-0, ±0) = Min(±0, -0) = -0
+//	Min(x) = x
+//	Min() = -Inf
+func Min(x ...float64) float64 {
+	if len(x) <= 0 {
+		return math.Inf(-1)
 	}
+	result := math.Inf(+1)
+	for _, a := range x {
+		result = math.Min(a, result)
+	}
+	return result
+}
+
+// Max returns the larger of x...
+//
+// Special cases are:
+//	Max(x, +Inf) = Max(+Inf, x) = +Inf
+//	Max(x, NaN) = Max(NaN, x) = NaN
+//	Max(+0, ±0) = Max(±0, +0) = +0
+//	Max(-0, -0) = -0
+//	Max(x) = x
+//	Max() = +Inf
+func Max(x ...float64) float64 {
+	if len(x) <= 0 {
+		return math.Inf(+1)
+	}
+	result := math.Inf(-1)
+	for _, a := range x {
+		result = math.Max(a, result)
+	}
+	return result
+}
+
+// MinMax returns the min, max values in this order, similar with Min and Max functions.
+//
+// Special cases are:
+//	MinMax(x) = x, x
+//	MinMax() = -Inf, +Inf
+func MinMax(x ...float64) (min float64, max float64) {
+	if len(x) <= 0 {
+		return math.Inf(-1), math.Inf(+1)
+	}
+	min = math.Inf(+1)
+	max = math.Inf(-1)
+	for _, a := range x {
+		min = math.Min(a, min)
+		max = math.Max(a, max)
+	}
+	return
+}
+
+// MinInt returns the smaller integer of x...
+//
+// Special cases are:
+//	MinInt(x) = x
+//	MinInt() = math.MinInt64
+func MinInt(x ...int64) int64 {
+	if len(x) <= 0 {
+		return int64(math.MinInt64)
+	}
+	result := int64(math.MaxInt64)
+	for _, a := range x {
+		if a < result {
+			result = a
+		}
+	}
+	return result
+}
+
+// MaxInt returns the larger integer of x...
+//
+// Special cases are:
+//	MaxInt(x) = x
+//	MaxInt() = math.MaxInt64
+func MaxInt(x ...int64) int64 {
+	if len(x) <= 0 {
+		return int64(math.MaxInt64)
+	}
+	result := int64(math.MinInt64)
+	for _, a := range x {
+		if a > result {
+			result = a
+		}
+	}
+	return result
+}
+
+// MinMaxInt returns the min, max integers in this order, similar with MinInt and MaxInt functions.
+//
+// Special cases are:
+//	MinMaxInt(x) = x, x
+//	MinMaxInt() = math.MinInt64, math.MaxInt64
+func MinMaxInt(x ...int64) (min int64, max int64) {
+	if len(x) <= 0 {
+		return int64(math.MinInt64), int64(math.MaxInt64)
+	}
+	min = int64(math.MaxInt64)
+	max = int64(math.MinInt64)
+	for _, a := range x {
+		if a < min {
+			min = a
+		}
+		if a > max {
+			max = a
+		}
+	}
+	return
 }
 
 // Between checks x is between a and b
@@ -74,6 +180,16 @@ func SafeDiv(x, y float64, allowNaN bool) float64 {
 	return x / y
 }
 
+// CryptoRand returns a random decimal number in [0, 1).
+// It returns -1 when error occurs.
+func CryptoRand() float64 {
+	r := CryptoRandInt(math.MaxInt64)
+	if r < 0 {
+		return -1
+	}
+	return float64(r) / math.MaxInt64
+}
+
 // CryptoRandInt returns a random integer in [0, max).
 // It returns -1 when error occurs.
 func CryptoRandInt(max int64) int64 {
@@ -87,14 +203,9 @@ func CryptoRandInt(max int64) int64 {
 	return num.Int64()
 }
 
-// CryptoRandFloat returns a random decimal number in [0, 1).
-// It returns -1 when error occurs.
+// CryptoRandFloat is synonym with CryptoRand.
 func CryptoRandFloat() float64 {
-	r := CryptoRandInt(math.MaxInt64)
-	if r < 0 {
-		return -1
-	}
-	return float64(r) / math.MaxInt64
+	return CryptoRand()
 }
 
 // CryptoRandCode generates random code in [10^(n-1), 10^n).
