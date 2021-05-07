@@ -244,3 +244,26 @@ func CryptoRandCode(n int) int64 {
 	}
 	return start + r
 }
+
+// Equal checks equality of all given floating points values.
+// It returns true if all values are equal.
+//
+// Special cases are:
+//	Equal() = false
+//	Equal(x) = true
+func Equal(x ...float64) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var c float64
+	for i, a := range x {
+		if i == 0 {
+			c = a
+			continue
+		}
+		if math.Abs(a-c) >= math.SmallestNonzeroFloat64 {
+			return false
+		}
+	}
+	return true
+}
