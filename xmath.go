@@ -251,19 +251,19 @@ func CryptoRandCode(n int) int64 {
 // Special cases are:
 //	Equal() = false
 //	Equal(x) = true
+//	Equal(NaN) = false
+//	Equal(NaN, x) = false
+//	Equal(x, NaN) = false
 func Equal(x ...float64) bool {
 	if len(x) <= 0 {
 		return false
 	}
 	var c float64
 	for i, a := range x {
-		if i == 0 {
-			c = a
-			continue
-		}
-		if math.Abs(a-c) >= math.SmallestNonzeroFloat64 {
+		if math.IsNaN(a) || (i > 0 && math.Abs(a-c) >= math.SmallestNonzeroFloat64) {
 			return false
 		}
+		c = a
 	}
 	return true
 }
