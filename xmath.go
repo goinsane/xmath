@@ -30,25 +30,6 @@ func RoundP(x float64, p int) float64 {
 	return math.Floor(x*k+0.5) / k
 }
 
-// Min returns the smaller of x...
-//
-// Special cases are:
-//	Min(x, -Inf) = Min(-Inf, x) = -Inf
-//	Min(x, NaN) = Min(NaN, x) = NaN
-//	Min(-0, ±0) = Min(±0, -0) = -0
-//	Min(x) = x
-//	Min() = -Inf
-func Min(x ...float64) float64 {
-	if len(x) <= 0 {
-		return math.Inf(-1)
-	}
-	result := math.Inf(+1)
-	for _, a := range x {
-		result = math.Min(a, result)
-	}
-	return result
-}
-
 // Max returns the larger of x...
 //
 // Special cases are:
@@ -69,6 +50,35 @@ func Max(x ...float64) float64 {
 	return result
 }
 
+// Min returns the smaller of x...
+//
+// Special cases are:
+//	Min(x, -Inf) = Min(-Inf, x) = -Inf
+//	Min(x, NaN) = Min(NaN, x) = NaN
+//	Min(-0, ±0) = Min(±0, -0) = -0
+//	Min(x) = x
+//	Min() = -Inf
+func Min(x ...float64) float64 {
+	if len(x) <= 0 {
+		return math.Inf(-1)
+	}
+	result := math.Inf(+1)
+	for _, a := range x {
+		result = math.Min(a, result)
+	}
+	return result
+}
+
+// MaxMin returns the max, min values in this order, similar with Max and Min functions.
+//
+// Special cases are:
+//	MaxMin(x) = x, x
+//	MaxMin() = +Inf, -Inf
+func MaxMin(x ...float64) (max float64, min float64) {
+	min, max = MinMax(x...)
+	return
+}
+
 // MinMax returns the min, max values in this order, similar with Min and Max functions.
 //
 // Special cases are:
@@ -85,6 +95,24 @@ func MinMax(x ...float64) (min float64, max float64) {
 		max = math.Max(a, max)
 	}
 	return
+}
+
+// MaxInt returns the larger integer of x...
+//
+// Special cases are:
+//	MaxInt(x) = x
+//	MaxInt() = math.MaxInt64
+func MaxInt(x ...int64) int64 {
+	if len(x) <= 0 {
+		return int64(math.MaxInt64)
+	}
+	result := int64(math.MinInt64)
+	for _, a := range x {
+		if a > result {
+			result = a
+		}
+	}
+	return result
 }
 
 // MinInt returns the smaller integer of x...
@@ -105,22 +133,14 @@ func MinInt(x ...int64) int64 {
 	return result
 }
 
-// MaxInt returns the larger integer of x...
+// MaxMinInt returns the max, min integers in this order, similar with MaxInt and MinInt functions.
 //
 // Special cases are:
-//	MaxInt(x) = x
-//	MaxInt() = math.MaxInt64
-func MaxInt(x ...int64) int64 {
-	if len(x) <= 0 {
-		return int64(math.MaxInt64)
-	}
-	result := int64(math.MinInt64)
-	for _, a := range x {
-		if a > result {
-			result = a
-		}
-	}
-	return result
+//	MaxMinInt(x) = x, x
+//	MaxMinInt() = math.MaxInt64, math.MinInt64
+func MaxMinInt(x ...int64) (max int64, min int64) {
+	min, max = MinMaxInt(x...)
+	return
 }
 
 // MinMaxInt returns the min, max integers in this order, similar with MinInt and MaxInt functions.
@@ -223,4 +243,27 @@ func CryptoRandCode(n int) int64 {
 		return -1
 	}
 	return start + r
+}
+
+// Equal checks equality of all given floating points values.
+// It returns true if all values are equal.
+//
+// Special cases are:
+//	Equal() = false
+//	Equal(x) = true
+func Equal(x ...float64) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var c float64
+	for i, a := range x {
+		if i == 0 {
+			c = a
+			continue
+		}
+		if math.Abs(a-c) >= math.SmallestNonzeroFloat64 {
+			return false
+		}
+	}
+	return true
 }
