@@ -245,22 +245,45 @@ func CryptoRandCode(n int) int64 {
 	return start + r
 }
 
-// Equal checks equality of all given floating points values.
+// AlmostEqual64 checks equality of all given 64-bit floating points values.
 // It returns true if all values are equal.
 //
 // Special cases are:
-//	Equal() = false
-//	Equal(x) = true
-//	Equal(NaN) = false
-//	Equal(NaN, x) = false
-//	Equal(x, NaN) = false
-func Equal(x ...float64) bool {
+//	AlmostEqual64() = false
+//	AlmostEqual64(x) = true
+//	AlmostEqual64(NaN) = false
+//	AlmostEqual64(NaN, x) = false
+//	AlmostEqual64(x, NaN) = false
+func AlmostEqual64(x ...float64) bool {
 	if len(x) <= 0 {
 		return false
 	}
 	var c float64
 	for i, a := range x {
 		if math.IsNaN(a) || (i > 0 && math.Abs(a-c) >= math.SmallestNonzeroFloat64) {
+			return false
+		}
+		c = a
+	}
+	return true
+}
+
+// AlmostEqual32 checks equality of all given 32-bit floating points values.
+// It returns true if all values are equal.
+//
+// Special cases are:
+//  AlmostEqual32() = false
+//  AlmostEqual32(x) = true
+//  AlmostEqual32(NaN) = false
+//  AlmostEqual32(NaN, x) = false
+//  AlmostEqual32(x, NaN) = false
+func AlmostEqual32(x ...float32) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var c float32
+	for i, a := range x {
+		if math.IsNaN(float64(a)) || (i > 0 && math.Abs(float64(a-c)) >= math.SmallestNonzeroFloat32) {
 			return false
 		}
 		c = a
