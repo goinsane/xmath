@@ -254,16 +254,23 @@ func CryptoRandCode(n int) int64 {
 //	AlmostEqual64(NaN) = false
 //	AlmostEqual64(NaN, x) = false
 //	AlmostEqual64(x, NaN) = false
+//	AlmostEqual64(+Inf, +Inf) = false
+//	AlmostEqual64(-Inf, -Inf) = false
 func AlmostEqual64(x ...float64) bool {
 	if len(x) <= 0 {
 		return false
 	}
-	var c float64
-	for i, a := range x {
-		if math.IsNaN(a) || (i > 0 && math.Abs(a-c) >= math.SmallestNonzeroFloat64) {
+	var a float64
+	for i, b := range x {
+		if math.IsNaN(b) {
 			return false
 		}
-		c = a
+		if i > 0 {
+			if d := math.Abs(b - a); math.IsNaN(d) || d >= math.SmallestNonzeroFloat64 {
+				return false
+			}
+		}
+		a = b
 	}
 	return true
 }
@@ -272,21 +279,58 @@ func AlmostEqual64(x ...float64) bool {
 // It returns true if all values are equal.
 //
 // Special cases are:
-//  AlmostEqual32() = false
-//  AlmostEqual32(x) = true
-//  AlmostEqual32(NaN) = false
-//  AlmostEqual32(NaN, x) = false
-//  AlmostEqual32(x, NaN) = false
+//	AlmostEqual32() = false
+//	AlmostEqual32(x) = true
+//	AlmostEqual32(NaN) = false
+//	AlmostEqual32(NaN, x) = false
+//	AlmostEqual32(x, NaN) = false
+//	AlmostEqual32(+Inf, +Inf) = false
+//	AlmostEqual32(-Inf, -Inf) = false
 func AlmostEqual32(x ...float32) bool {
 	if len(x) <= 0 {
 		return false
 	}
-	var c float32
-	for i, a := range x {
-		if math.IsNaN(float64(a)) || (i > 0 && math.Abs(float64(a-c)) >= math.SmallestNonzeroFloat32) {
+	var a float32
+	for i, b := range x {
+		if math.IsNaN(float64(b)) {
 			return false
 		}
-		c = a
+		if i > 0 {
+			if d := math.Abs(float64(b - a)); math.IsNaN(d) || d >= math.SmallestNonzeroFloat32 {
+				return false
+			}
+		}
+		a = b
+	}
+	return true
+}
+
+// Equal checks equality of all given floating points values by comparing.
+// It returns true if all values are equal.
+//
+// Special cases are:
+//	Equal() = false
+//	Equal(x) = true
+//	Equal(NaN) = false
+//	Equal(NaN, x) = false
+//	Equal(x, NaN) = false
+//	Equal(+Inf, +Inf) = false
+//	Equal(-Inf, -Inf) = false
+func Equal(x ...float64) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float64
+	for i, b := range x {
+		if math.IsNaN(b) {
+			return false
+		}
+		if i > 0 {
+			if d := math.Abs(b - a); math.IsNaN(d) || a > b || a < b {
+				return false
+			}
+		}
+		a = b
 	}
 	return true
 }
