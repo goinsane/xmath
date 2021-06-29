@@ -202,16 +202,6 @@ func SafeDiv(x, y float64, allowNaN bool) float64 {
 	return x / y
 }
 
-// CryptoRand returns a random decimal number in [0, 1).
-// It returns -1 when error occurs.
-func CryptoRand() float64 {
-	r := CryptoRandInt(math.MaxInt64)
-	if r < 0 {
-		return -1
-	}
-	return float64(r) / math.MaxInt64
-}
-
 // CryptoRandInt returns a random integer in [0, max).
 // It returns -1 when error occurs.
 func CryptoRandInt(max int64) int64 {
@@ -225,9 +215,19 @@ func CryptoRandInt(max int64) int64 {
 	return num.Int64()
 }
 
-// CryptoRandFloat is synonym with CryptoRand.
+// CryptoRandFloat returns a random decimal number in [0, 1).
+// It returns -1 when error occurs.
 func CryptoRandFloat() float64 {
-	return CryptoRand()
+	r := CryptoRandInt(math.MaxInt64)
+	if r < 0 {
+		return -1
+	}
+	return float64(r) / math.MaxInt64
+}
+
+// CryptoRand is synonym with CryptoRandFloat.
+func CryptoRand() float64 {
+	return CryptoRandFloat()
 }
 
 // CryptoRandCode generates random code in [10^(n-1), 10^n).

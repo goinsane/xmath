@@ -22,13 +22,6 @@ func BenchmarkRound(b *testing.B) {
 	}
 }
 
-func BenchmarkCryptoRand(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		xmath.CryptoRand()
-	}
-}
-
 func BenchmarkCryptoRandInt(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -40,6 +33,13 @@ func BenchmarkCryptoRandFloat(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		xmath.CryptoRandFloat()
+	}
+}
+
+func BenchmarkCryptoRand(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		xmath.CryptoRand()
 	}
 }
 
