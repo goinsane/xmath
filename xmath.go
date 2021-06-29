@@ -324,9 +324,9 @@ func AlmostEqual32(x ...float32) bool {
 	return AlmostEqualP32(1, x...)
 }
 
-// AlmostEqual is synonym with AlmostEqual64.
+// AlmostEqual is synonym with AlmostEqualP(1, x...).
 func AlmostEqual(x ...float64) bool {
-	return AlmostEqual64(x...)
+	return AlmostEqualP(1, x...)
 }
 
 // Equal64 checks exact equality of all given 64-bit floating points values by comparing.
