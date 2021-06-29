@@ -155,6 +155,16 @@ func ExampleAlmostEqual32() {
 	// are 1004.80005 and 1004.8 almost equal: true
 }
 
+func ExampleAlmostEqual() {
+	var a, b float64
+	a, b = 1000.0, 2.00000004
+	x, y := a+b+b, b+b+a
+	fmt.Printf("is AlmostEqual synonym with AlmostEqual64: %t", xmath.AlmostEqual(x, y) == xmath.AlmostEqual64(x, y))
+
+	// Output:
+	// is AlmostEqual synonym with AlmostEqual64: true
+}
+
 func ExampleEqual64() {
 	var a, b float64
 	a, b = 1000.0, 2.00000004
@@ -185,6 +195,16 @@ func ExampleEqual32() {
 	// b+b+a=1004.8
 	// are 1004.80005 and 1004.8 equal: false
 	// are 1004.80005 and 1004.8 equal by function: false
+}
+
+func ExampleEqual() {
+	var a, b float64
+	a, b = 1000.0, 2.00000004
+	x, y := a+b+b, b+b+a
+	fmt.Printf("is Equal synonym with Equal64: %t", xmath.Equal(x, y) == xmath.Equal64(x, y))
+
+	// Output:
+	// is Equal synonym with Equal64: true
 }
 
 func Example_example1() {
