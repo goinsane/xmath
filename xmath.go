@@ -307,18 +307,23 @@ func AlmostEqual32(x ...float32) bool {
 	return true
 }
 
-// Equal checks exact equality of all given floating points values by comparing.
+// AlmostEqual is synonym with AlmostEqual64.
+func AlmostEqual(x ...float64) bool {
+	return AlmostEqual64(x...)
+}
+
+// Equal64 checks exact equality of all given 64-bit floating points values by comparing.
 // It returns true if all values are equal.
 //
 // Special cases are:
-//	Equal() = false
-//	Equal(x) = true
-//	Equal(NaN) = false
-//	Equal(NaN, x) = false
-//	Equal(x, NaN) = false
-//	Equal(+Inf, +Inf) = true
-//	Equal(-Inf, -Inf) = true
-func Equal(x ...float64) bool {
+//	Equal64() = false
+//	Equal64(x) = true
+//	Equal64(NaN) = false
+//	Equal64(NaN, x) = false
+//	Equal64(x, NaN) = false
+//	Equal64(+Inf, +Inf) = true
+//	Equal64(-Inf, -Inf) = true
+func Equal64(x ...float64) bool {
 	if len(x) <= 0 {
 		return false
 	}
@@ -335,4 +340,39 @@ func Equal(x ...float64) bool {
 		a = b
 	}
 	return true
+}
+
+// Equal32 checks exact equality of all given 32-bit floating points values by comparing.
+// It returns true if all values are equal.
+//
+// Special cases are:
+//	Equal32() = false
+//	Equal32(x) = true
+//	Equal32(NaN) = false
+//	Equal32(NaN, x) = false
+//	Equal32(x, NaN) = false
+//	Equal32(+Inf, +Inf) = true
+//	Equal32(-Inf, -Inf) = true
+func Equal32(x ...float32) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float32
+	for i, b := range x {
+		if math.IsNaN(float64(b)) {
+			return false
+		}
+		if i > 0 {
+			if !math.IsNaN(float64(a-b)) && (a > b || a < b) {
+				return false
+			}
+		}
+		a = b
+	}
+	return true
+}
+
+// Equal is synonym with Equal64.
+func Equal(x ...float64) bool {
+	return Equal64(x...)
 }
