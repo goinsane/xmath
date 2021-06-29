@@ -3,9 +3,52 @@ package xmath_test
 import (
 	"fmt"
 	"math"
+	"testing"
 
 	"github.com/goinsane/xmath"
 )
+
+func BenchmarkRound(b *testing.B) {
+	if b.N > 1000000 {
+		b.N = 1000000
+	}
+	numberSet := make([]float64, b.N)
+	for i := 0; i < b.N; i++ {
+		numberSet[i] = xmath.CryptoRandFloat()
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		xmath.Round(numberSet[i])
+	}
+}
+
+func BenchmarkCryptoRand(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		xmath.CryptoRand()
+	}
+}
+
+func BenchmarkCryptoRandInt(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		xmath.CryptoRandInt(math.MaxInt64)
+	}
+}
+
+func BenchmarkCryptoRandFloat(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		xmath.CryptoRandFloat()
+	}
+}
+
+func BenchmarkCryptoRandCode(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		xmath.CryptoRandCode(8)
+	}
+}
 
 func ExampleFloorP() {
 	fmt.Printf("floor of +3.1416 with precision 3: %+6.4f\n", xmath.FloorP(+3.1416, 3))
