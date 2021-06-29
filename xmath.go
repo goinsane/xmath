@@ -247,18 +247,19 @@ func CryptoRandCode(n int) int64 {
 	return start + r
 }
 
-// AlmostEqual64 checks almost equality of all given 64-bit floating points values.
-// It returns true if all values are equal.
+// AlmostEqualP64 checks almost equality of all given 64-bit floating points values.
+// Argument p is measure of precision. If p is 0, it checks exact equality.
+// It returns true if all values are almost equal.
 //
 // Special cases are:
-//	AlmostEqual64() = false
-//	AlmostEqual64(x) = true
-//	AlmostEqual64(NaN) = false
-//	AlmostEqual64(NaN, x) = false
-//	AlmostEqual64(x, NaN) = false
-//	AlmostEqual64(+Inf, +Inf) = true
-//	AlmostEqual64(-Inf, -Inf) = true
-func AlmostEqual64(x ...float64) bool {
+//	AlmostEqualP64(p) = false
+//	AlmostEqualP64(p, x) = true
+//	AlmostEqualP64(p, NaN) = false
+//	AlmostEqualP64(p, NaN, x) = false
+//	AlmostEqualP64(p, x, NaN) = false
+//	AlmostEqualP64(p, +Inf, +Inf) = true
+//	AlmostEqualP64(p, -Inf, -Inf) = true
+func AlmostEqualP64(p uint64, x ...float64) bool {
 	if len(x) <= 0 {
 		return false
 	}
@@ -268,7 +269,7 @@ func AlmostEqual64(x ...float64) bool {
 			return false
 		}
 		if i > 0 {
-			if d := math.Float64bits(a) - math.Float64bits(b); d > 1 && -d > 1 {
+			if d := math.Float64bits(a) - math.Float64bits(b); d > p && -d > p {
 				return false
 			}
 		}
@@ -277,18 +278,19 @@ func AlmostEqual64(x ...float64) bool {
 	return true
 }
 
-// AlmostEqual32 checks almost equality of all given 32-bit floating points values.
-// It returns true if all values are equal.
+// AlmostEqualP32 checks almost equality of all given 32-bit floating points values.
+// Argument p is measure of precision. If p is 0, it checks exact equality.
+// It returns true if all values are almost equal.
 //
 // Special cases are:
-//	AlmostEqual32() = false
-//	AlmostEqual32(x) = true
-//	AlmostEqual32(NaN) = false
-//	AlmostEqual32(NaN, x) = false
-//	AlmostEqual32(x, NaN) = false
-//	AlmostEqual32(+Inf, +Inf) = true
-//	AlmostEqual32(-Inf, -Inf) = true
-func AlmostEqual32(x ...float32) bool {
+//	AlmostEqualP32(p) = false
+//	AlmostEqualP32(p, x) = true
+//	AlmostEqualP32(p, NaN) = false
+//	AlmostEqualP32(p, NaN, x) = false
+//	AlmostEqualP32(p, x, NaN) = false
+//	AlmostEqualP32(p, +Inf, +Inf) = true
+//	AlmostEqualP32(p, -Inf, -Inf) = true
+func AlmostEqualP32(p uint32, x ...float32) bool {
 	if len(x) <= 0 {
 		return false
 	}
@@ -298,13 +300,28 @@ func AlmostEqual32(x ...float32) bool {
 			return false
 		}
 		if i > 0 {
-			if d := math.Float32bits(a) - math.Float32bits(b); d > 1 && -d > 1 {
+			if d := math.Float32bits(a) - math.Float32bits(b); d > p && -d > p {
 				return false
 			}
 		}
 		a = b
 	}
 	return true
+}
+
+// AlmostEqualP is synonym with AlmostEqualP64.
+func AlmostEqualP(p uint64, x ...float64) bool {
+	return AlmostEqualP64(p, x...)
+}
+
+// AlmostEqual64 is synonym with AlmostEqualP64(1, x...).
+func AlmostEqual64(x ...float64) bool {
+	return AlmostEqualP64(1, x...)
+}
+
+// AlmostEqual32 is synonym with AlmostEqualP32(1, x...).
+func AlmostEqual32(x ...float32) bool {
+	return AlmostEqualP32(1, x...)
 }
 
 // AlmostEqual is synonym with AlmostEqual64.
