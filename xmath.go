@@ -181,21 +181,23 @@ func BetweenIn(x float64, a, b float64) bool {
 // Using this function is not necessary in GoLang. Because GoLang's default behaviour is same with this function.
 // Special cases are:
 //	SafeDiv(0, ±n, true) = ±0
+//	SafeDiv(0, ±n, false) = ±0
 //	SafeDiv(±n, 0, true) = ±Inf
+//	SafeDiv(±n, 0, false) = ±Inf
 //	SafeDiv(0, 0, true) = NaN
 //	SafeDiv(0, 0, false) = 0
 func SafeDiv(x, y float64, allowNaN bool) float64 {
 	if y == 0 {
-		if x == 0 {
-			if allowNaN {
-				return math.NaN()
-			}
-			return 0
-		}
 		if x < 0 {
 			return math.Inf(-1)
 		}
-		return math.Inf(+1)
+		if x > 0 {
+			return math.Inf(+1)
+		}
+		if allowNaN {
+			return math.NaN()
+		}
+		return 0
 	}
 	return x / y
 }
