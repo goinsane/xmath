@@ -7,13 +7,13 @@ import (
 	"math/big"
 )
 
-// FloorP returns the greatest value less than or equal to x with specified precision.
+// FloorP returns the greatest value less than or equal to x with specified decimal precision.
 func FloorP(x float64, p int) float64 {
 	k := math.Pow10(p)
 	return math.Floor(x*k) / k
 }
 
-// CeilP returns the least value greater than or equal to x with specified precision.
+// CeilP returns the least value greater than or equal to x with specified decimal precision.
 func CeilP(x float64, p int) float64 {
 	k := math.Pow10(p)
 	return math.Ceil(x*k) / k
@@ -24,7 +24,7 @@ func Round(x float64) float64 {
 	return math.Floor(x + 0.5)
 }
 
-// RoundP returns the nearest integer value, rounding half away from zero with specified precision.
+// RoundP returns the nearest integer value, rounding half away from zero with specified decimal precision.
 func RoundP(x float64, p int) float64 {
 	k := math.Pow10(p)
 	return math.Floor(x*k+0.5) / k
