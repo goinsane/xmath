@@ -202,7 +202,7 @@ func ExampleAlmostEqual() {
 	var a, b float64
 	a, b = 1000.0, 2.00000004
 	x, y := a+b+b, b+b+a
-	fmt.Printf("is AlmostEqual synonym with AlmostEqual64: %t", xmath.AlmostEqual(x, y) == xmath.AlmostEqual64(x, y))
+	fmt.Printf("is AlmostEqual synonym with AlmostEqual64: %t\n", xmath.AlmostEqual(x, y) == xmath.AlmostEqual64(x, y))
 
 	// Output:
 	// is AlmostEqual synonym with AlmostEqual64: true
@@ -244,7 +244,7 @@ func ExampleAlmostEqualD() {
 	var a, b float64
 	a, b = 1000.0, 2.00000004
 	x, y := a+b+b, b+b+a
-	fmt.Printf("is AlmostEqualD synonym with AlmostEqualD64: %t", xmath.AlmostEqualD(x, y) == xmath.AlmostEqualD64(x, y))
+	fmt.Printf("is AlmostEqualD synonym with AlmostEqualD64: %t\n", xmath.AlmostEqualD(x, y) == xmath.AlmostEqualD64(x, y))
 
 	// Output:
 	// is AlmostEqualD synonym with AlmostEqualD64: true
@@ -286,10 +286,19 @@ func ExampleEqual() {
 	var a, b float64
 	a, b = 1000.0, 2.00000004
 	x, y := a+b+b, b+b+a
-	fmt.Printf("is Equal synonym with Equal64: %t", xmath.Equal(x, y) == xmath.Equal64(x, y))
+	fmt.Printf("is Equal synonym with Equal64: %t\n", xmath.Equal(x, y) == xmath.Equal64(x, y))
 
 	// Output:
 	// is Equal synonym with Equal64: true
+}
+
+func ExampleIsZero() {
+	fmt.Printf("is remainder of -2.4/0.4 zero: %t\n", xmath.IsZero(math.Remainder(-2.4, 0.4)))
+	fmt.Printf("is remainder of -2.5/0.4 zero: %t\n", xmath.IsZero(math.Remainder(-2.5, 0.4)))
+
+	// Output:
+	// is remainder of -2.4/0.4 zero: true
+	// is remainder of -2.5/0.4 zero: false
 }
 
 func Example_example1() {

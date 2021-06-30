@@ -494,3 +494,9 @@ func Equal32(x ...float32) bool {
 func Equal(x ...float64) bool {
 	return Equal64(x...)
 }
+
+// IsZero checks whether fraction of the given value is zero.
+// It may return true even exponential isn't zero.
+func IsZero(x float64) bool {
+	return math.Float64bits(x)<<12 == 0
+}
