@@ -13,9 +13,29 @@ func FloorP(x float64, p int) float64 {
 	return math.Floor(x*k) / k
 }
 
+// FloorPB returns the greatest value less than or equal to x with specified precision of base.
+// It panics unless 2 <= base <= 36.
+func FloorPB(x float64, p int, base int) float64 {
+	if base < 2 || base > 36 {
+		panic("invalid base")
+	}
+	k := math.Pow(float64(base), float64(p))
+	return math.Floor(x*k) / k
+}
+
 // CeilP returns the least value greater than or equal to x with specified decimal precision.
 func CeilP(x float64, p int) float64 {
 	k := math.Pow10(p)
+	return math.Ceil(x*k) / k
+}
+
+// CeilPB returns the least value greater than or equal to x with specified precision of base.
+// It panics unless 2 <= base <= 36.
+func CeilPB(x float64, p int, base int) float64 {
+	if base < 2 || base > 36 {
+		panic("invalid base")
+	}
+	k := math.Pow(float64(base), float64(p))
 	return math.Ceil(x*k) / k
 }
 
@@ -27,6 +47,16 @@ func Round(x float64) float64 {
 // RoundP returns the nearest integer value, rounding half away from zero with specified decimal precision.
 func RoundP(x float64, p int) float64 {
 	k := math.Pow10(p)
+	return math.Floor(x*k+0.5) / k
+}
+
+// RoundPB returns the nearest integer value, rounding half away from zero with specified precision of base.
+// It panics unless 2 <= base <= 36.
+func RoundPB(x float64, p int, base int) float64 {
+	if base < 2 || base > 36 {
+		panic("invalid base")
+	}
+	k := math.Pow(float64(base), float64(p))
 	return math.Floor(x*k+0.5) / k
 }
 
