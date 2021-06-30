@@ -300,7 +300,10 @@ func AlmostEqualP64(p uint64, x ...float64) bool {
 		}
 		if i > 0 {
 			c, d := math.Float64bits(a), math.Float64bits(b)
-			if (c>>52 != d>>52) || (c-d > p && d-c > p) {
+			if c < d {
+				c, d = d, c
+			}
+			if (c>>52 != d>>52) || c-d > p {
 				return false
 			}
 		}
@@ -332,7 +335,10 @@ func AlmostEqualP32(p uint32, x ...float32) bool {
 		}
 		if i > 0 {
 			c, d := math.Float32bits(a), math.Float32bits(b)
-			if (c>>23 != d>>23) || (c-d > p && d-c > p) {
+			if c < d {
+				c, d = d, c
+			}
+			if (c>>23 != d>>23) || c-d > p {
 				return false
 			}
 		}
