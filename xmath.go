@@ -367,6 +367,69 @@ func AlmostEqual(x ...float64) bool {
 	return AlmostEqualP(1, x...)
 }
 
+// AlmostEqualD64 checks almost equality of all given 64-bit floating points values.
+// Argument d is the least difference value of inequality. If d is 0, it checks exact equality.
+// It returns true if all values are almost equal.
+//
+// Special cases are:
+//	AlmostEqualD64(d) = false
+//	AlmostEqualD64(d, x) = true
+//	AlmostEqualD64(d, NaN) = false
+//	AlmostEqualD64(d, NaN, x) = false
+//	AlmostEqualD64(d, x, NaN) = false
+//	AlmostEqualD64(d, +Inf, +Inf) = true
+//	AlmostEqualD64(d, -Inf, -Inf) = true
+func AlmostEqualD64(d float64, x ...float64) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float64
+	for i, b := range x {
+		if math.IsNaN(b) {
+			return false
+		}
+		if i > 0 && math.Abs(a-b) >= d {
+			return false
+		}
+		a = b
+	}
+	return true
+}
+
+// AlmostEqualD32 checks almost equality of all given 32-bit floating points values.
+// Argument d is the least difference value of inequality. If d is 0, it checks exact equality.
+// It returns true if all values are almost equal.
+//
+// Special cases are:
+//	AlmostEqualD32(d) = false
+//	AlmostEqualD32(d, x) = true
+//	AlmostEqualD32(d, NaN) = false
+//	AlmostEqualD32(d, NaN, x) = false
+//	AlmostEqualD32(d, x, NaN) = false
+//	AlmostEqualD32(d, +Inf, +Inf) = true
+//	AlmostEqualD32(d, -Inf, -Inf) = true
+func AlmostEqualD32(d float32, x ...float32) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float32
+	for i, b := range x {
+		if math.IsNaN(float64(b)) {
+			return false
+		}
+		if i > 0 && math.Abs(float64(a-b)) >= float64(d) {
+			return false
+		}
+		a = b
+	}
+	return true
+}
+
+// AlmostEqualD is synonym with AlmostEqualD64.
+func AlmostEqualD(d float64, x ...float64) bool {
+	return AlmostEqualD64(d, x...)
+}
+
 // Equal64 checks exact equality of all given 64-bit floating points values by comparing.
 // It returns true if all values are equal.
 //
