@@ -12,8 +12,8 @@ func ExampleFloorBigFloat() {
 	fmt.Printf("floor of %v: %v\n", 2.5, xmath.FloorBigFloat(big.NewFloat(2.5)))
 	fmt.Printf("floor of %v: %v\n", -6.5, xmath.FloorBigFloat(big.NewFloat(-6.5)))
 	fmt.Printf("floor of %v: %v\n", -6.6, xmath.FloorBigFloat(big.NewFloat(-6.6)))
-	fmt.Printf("floor of %v: %v\n", -6.5, xmath.FloorBigFloat(big.NewFloat(5)))
-	fmt.Printf("floor of %v: %v\n", -6.6, xmath.FloorBigFloat(big.NewFloat(-9)))
+	fmt.Printf("floor of %v: %v\n", 5, xmath.FloorBigFloat(big.NewFloat(5)))
+	fmt.Printf("floor of %v: %v\n", -9, xmath.FloorBigFloat(big.NewFloat(-9)))
 
 	// Output:
 	// floor of 2.4: 2
@@ -29,8 +29,8 @@ func ExampleCeilBigFloat() {
 	fmt.Printf("ceil of %v: %v\n", 2.5, xmath.CeilBigFloat(big.NewFloat(2.5)))
 	fmt.Printf("ceil of %v: %v\n", -6.5, xmath.CeilBigFloat(big.NewFloat(-6.5)))
 	fmt.Printf("ceil of %v: %v\n", -6.6, xmath.CeilBigFloat(big.NewFloat(-6.6)))
-	fmt.Printf("ceil of %v: %v\n", -6.5, xmath.CeilBigFloat(big.NewFloat(5)))
-	fmt.Printf("ceil of %v: %v\n", -6.6, xmath.CeilBigFloat(big.NewFloat(-9)))
+	fmt.Printf("ceil of %v: %v\n", 5, xmath.CeilBigFloat(big.NewFloat(5)))
+	fmt.Printf("ceil of %v: %v\n", -9, xmath.CeilBigFloat(big.NewFloat(-9)))
 
 	// Output:
 	// ceil of 2.4: 3
@@ -46,8 +46,8 @@ func ExampleRoundBigFloat() {
 	fmt.Printf("round of %v: %v\n", 2.5, xmath.RoundBigFloat(big.NewFloat(2.5)))
 	fmt.Printf("round of %v: %v\n", -6.5, xmath.RoundBigFloat(big.NewFloat(-6.5)))
 	fmt.Printf("round of %v: %v\n", -6.6, xmath.RoundBigFloat(big.NewFloat(-6.6)))
-	fmt.Printf("round of %v: %v\n", -6.5, xmath.RoundBigFloat(big.NewFloat(5)))
-	fmt.Printf("round of %v: %v\n", -6.6, xmath.RoundBigFloat(big.NewFloat(-9)))
+	fmt.Printf("round of %v: %v\n", 5, xmath.RoundBigFloat(big.NewFloat(5)))
+	fmt.Printf("round of %v: %v\n", -9, xmath.RoundBigFloat(big.NewFloat(-9)))
 
 	// Output:
 	// round of 2.4: 2
