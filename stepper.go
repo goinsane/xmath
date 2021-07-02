@@ -68,6 +68,14 @@ func NewStepper(step, max, min float64) (s *Stepper, err error) {
 	return s, nil
 }
 
+func (s *Stepper) Count() int64 {
+	return new(big.Int).Quo(s.intvlNum, s.stepNum).Int64()
+}
+
+func (s *Stepper) Step(index int64) (float64, error) {
+	return s.normalize(new(big.Int).Mul(big.NewInt(index), s.stepNum))
+}
+
 func (s *Stepper) Normalize(x float64) (float64, error) {
 	return s.normalize(s.toDiffNum(x))
 }
