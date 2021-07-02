@@ -2,6 +2,7 @@ package xmath_test
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 
 	"github.com/goinsane/xmath"
@@ -81,6 +82,50 @@ func ExampleIntBigRat() {
 	// integer of -66/10: -6 acc=Above
 	// integer of 50/10: 5 acc=Exact
 	// integer of -90/10: -9 acc=Exact
+}
+
+func ExampleInt64BigRat() {
+	var k int64
+	var acc big.Accuracy
+	k, acc = xmath.Int64BigRat(new(big.Rat).SetFrac(big.NewInt(50), big.NewInt(10)))
+	fmt.Printf("int64 of 50/10: %v acc=%v\n", k, acc)
+	k, acc = xmath.Int64BigRat(new(big.Rat).SetFrac(big.NewInt(-90), big.NewInt(10)))
+	fmt.Printf("int64 of -90/10: %v acc=%v\n", k, acc)
+	k, acc = xmath.Int64BigRat(new(big.Rat).SetFrac(big.NewInt(math.MaxInt64), big.NewInt(5)))
+	fmt.Printf("int64 of MaxInt64/5: %v acc=%v\n", k, acc)
+	k, acc = xmath.Int64BigRat(new(big.Rat).SetFrac(big.NewInt(math.MinInt64), big.NewInt(5)))
+	fmt.Printf("int64 of MinInt64/5: %v acc=%v\n", k, acc)
+	k, acc = xmath.Int64BigRat(new(big.Rat).SetFrac(new(big.Int).Mul(big.NewInt(8), big.NewInt(math.MaxInt64)), big.NewInt(5)))
+	fmt.Printf("int64 of 8*MaxInt64/5: %v acc=%v\n", k, acc)
+	k, acc = xmath.Int64BigRat(new(big.Rat).SetFrac(new(big.Int).Mul(big.NewInt(8), big.NewInt(math.MinInt64)), big.NewInt(5)))
+	fmt.Printf("int64 of 8*MinInt64/5: %v acc=%v\n", k, acc)
+
+	// Output:
+	// int64 of 50/10: 5 acc=Exact
+	// int64 of -90/10: -9 acc=Exact
+	// int64 of MaxInt64/5: 1844674407370955161 acc=Below
+	// int64 of MinInt64/5: -1844674407370955161 acc=Above
+	// int64 of 8*MaxInt64/5: 9223372036854775807 acc=Below
+	// int64 of 8*MinInt64/5: -9223372036854775808 acc=Above
+}
+
+func ExampleUint64BigRat() {
+	var k uint64
+	var acc big.Accuracy
+	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(big.NewInt(50), big.NewInt(10)))
+	fmt.Printf("uint64 of 50/10: %v acc=%v\n", k, acc)
+	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(big.NewInt(0), big.NewInt(5)))
+	fmt.Printf("uint64 of 0/5: %v acc=%v\n", k, acc)
+	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(new(big.Int).Mul(big.NewInt(8), big.NewInt(math.MaxUint64/2)), big.NewInt(5)))
+	fmt.Printf("uint64 of 4*MaxUint64/5: %v acc=%v\n", k, acc)
+	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(new(big.Int).Mul(big.NewInt(8), big.NewInt(math.MaxUint64/2)), big.NewInt(5)))
+	fmt.Printf("uint64 of 4*MaxUint64/5: %v acc=%v\n", k, acc)
+
+	// Output:
+	// uint64 of 50/10: 5 acc=Exact
+	// uint64 of 0/5: 0 acc=Exact
+	// uint64 of 4*MaxUint64/5: 14757395258967641291 acc=Below
+	// uint64 of 4*MaxUint64/5: 14757395258967641291 acc=Below
 }
 
 func ExampleFloorBigRat() {
