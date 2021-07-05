@@ -116,15 +116,15 @@ func ExampleUint64BigRat() {
 	fmt.Printf("uint64 of 50/10: %v acc=%v\n", k, acc)
 	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(big.NewInt(0), big.NewInt(5)))
 	fmt.Printf("uint64 of 0/5: %v acc=%v\n", k, acc)
-	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(big.NewInt(math.MaxInt64), big.NewInt(5)))
-	fmt.Printf("uint64 of MaxInt64/5: %v acc=%v\n", k, acc)
+	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(big.NewInt(math.MaxInt64), big.NewInt(7)))
+	fmt.Printf("uint64 of MaxInt64/7: %v acc=%v\n", k, acc)
 	k, acc = xmath.Uint64BigRat(new(big.Rat).SetFrac(new(big.Int).Mul(big.NewInt(13), big.NewInt(math.MaxInt64)), big.NewInt(5)))
 	fmt.Printf("uint64 of 13*MaxInt64/5: %v acc=%v\n", k, acc)
 
 	// Output:
 	// uint64 of 50/10: 5 acc=Exact
 	// uint64 of 0/5: 0 acc=Exact
-	// uint64 of MaxInt64/5: 1844674407370955161 acc=Below
+	// uint64 of MaxInt64/7: 1317624576693539401 acc=Exact
 	// uint64 of 13*MaxInt64/5: 18446744073709551615 acc=Below
 }
 
