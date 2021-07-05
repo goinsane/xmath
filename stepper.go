@@ -2,6 +2,7 @@ package xmath
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 )
@@ -20,12 +21,12 @@ var (
 
 type Stepper struct {
 	stepRat       *big.Rat
-	stepNumHalf   *big.Int
-	stepDenomHalf *big.Int
 	stepNum       *big.Int
 	stepDenom     *big.Int
 	maxRat        *big.Rat
+	maxNum        *big.Int
 	minRat        *big.Rat
+	minNum        *big.Int
 	intvlRat      *big.Rat
 	intvlNum      *big.Int
 }
@@ -51,8 +52,24 @@ func NewStepper(step, max, min float64) (s *Stepper, err error) {
 		maxRat:  new(big.Rat).SetFloat64(max),
 		minRat:  new(big.Rat).SetFloat64(min),
 	}
-	s.stepNumHalf, s.stepDenomHalf = s.stepRat.Num(), s.stepRat.Denom()
-	s.stepNum, s.stepDenom = new(big.Int).Mul(big.NewInt(2), s.stepNumHalf), new(big.Int).Mul(big.NewInt(2), s.stepDenomHalf)
+	s.stepNum, s.stepDenom = new(big.Int).Mul(big.NewInt(2), s.stepRat.Num()), new(big.Int).Mul(big.NewInt(2), s.stepRat.Denom())
+	//s.stepNum, s.stepDenom = splitBigRat(s.stepRat)
+	//s.stepNum, s.stepDenom = s.stepRat.Num(), s.stepRat.Denom()
+
+	if q, r := new(big.Int).QuoRem(s.stepDenom, s.maxRat.Denom(), new(big.Int)); r.Cmp(big.NewInt(0)) == 0 {
+		s.maxNum = new(big.Int).Mul(s.maxRat.Num(), q)
+		//s.minNum = new(big.Int).Mul(s.minRat.Num(), q)
+	} else {
+		return nil, ErrStepperMaxOverflow
+	}
+	if q, r := new(big.Int).QuoRem(s.stepDenom, s.minRat.Denom(), new(big.Int)); r.Cmp(big.NewInt(0)) == 0 {
+		//s.maxNum = new(big.Int).Mul(s.maxRat.Num(), q)
+		s.minNum = new(big.Int).Mul(s.minRat.Num(), q)
+	} else {
+		return nil, ErrStepperMinOverflow
+	}
+
+
 	s.intvlRat = new(big.Rat).Sub(s.maxRat, s.minRat)
 	if q := new(big.Rat).Quo(s.intvlRat, s.stepRat); !q.IsInt() {
 		f, _ := q.Float64()
@@ -61,6 +78,8 @@ func NewStepper(step, max, min float64) (s *Stepper, err error) {
 		}
 	}
 	if q, r := new(big.Int).QuoRem(s.stepDenom, s.intvlRat.Denom(), new(big.Int)); r.Cmp(big.NewInt(0)) == 0 {
+		//s.maxNum = new(big.Int).Mul(s.maxRat.Num(), q)
+		//s.minNum = new(big.Int).Mul(s.minRat.Num(), q)
 		s.intvlNum = new(big.Int).Mul(s.intvlRat.Num(), q)
 	} else {
 		return nil, ErrStepperStepOverflow
@@ -89,7 +108,7 @@ func (s *Stepper) normalize(n *big.Int) (float64, error) {
 		f, _ := s.minRat.Float64()
 		return f, ErrStepperMinExceeded
 	}
-	f, exact := s.exactFromNum(n, 2)
+	f, exact := s.exactFromNum(n, 0)
 	if !exact {
 		return f, ErrStepperInexactValue
 	}
@@ -97,27 +116,56 @@ func (s *Stepper) normalize(n *big.Int) (float64, error) {
 }
 
 func (s *Stepper) toDiffNum(x float64) *big.Int {
-	f := new(big.Rat).SetFloat64(x)
-	d := new(big.Rat).Sub(f, s.minRat)
-	m := new(big.Rat).Mul(d, new(big.Rat).SetInt(s.stepDenom))
-	n, _ := IntBigRat(m)
-	_, r := new(big.Int).QuoRem(n, s.stepNum, new(big.Int))
-	n.Sub(n, r)
-	switch t := r.Sign(); {
-	case t < 0:
-		if r.Cmp(new(big.Int).Sub(big.NewInt(0), s.stepNumHalf)) < 0 {
-			n.Sub(n, s.stepNum)
-		}
-	case t > 0:
-		if r.Cmp(s.stepNumHalf) >= 0 {
-			n.Add(n, s.stepNum)
-		}
-	}
-	return n
+	/*a := new(big.Rat).SetFloat64(x)
+	k := new(big.Int).Mul(a.Denom(), big.NewInt(2))
+	//k := big.NewInt(1)
+	m := new(big.Rat).Mul(a, new(big.Rat).SetInt(new(big.Int).Mul(s.stepDenom, k)))
+	n := RoundBigRat(m)
+	n.Sub(n, new(big.Int).Mul(s.minNum, k))
+	//roundToStepBigInt(n, k)
+	n.Quo(n, k)
+	roundToStepBigInt(n, s.stepNum)
+	fmt.Println(n, s.stepDenom)*/
+
+	b := new(big.Rat).SetFloat64(x)
+	//a := new(big.Rat).Sub(b, s.minRat)
+	//fmt.Println(a.Float64())
+	a := b
+	//fmt.Println(a)
+	num, denom := new(big.Int).Mul(a.Num(), big.NewInt(2)), new(big.Int).Mul(a.Denom(), big.NewInt(2))
+	//num, denom := splitBigRat(a)
+	//fmt.Println(num, denom)
+	//num, denom := a.Num(), a.Denom()
+	//fmt.Println(num, denom, a)
+	newNum, newDenom := new(big.Int).Mul(num, s.stepDenom), new(big.Int).Mul(denom, s.stepDenom)
+	_, _ = newNum, newDenom
+	k := new(big.Int).Set(newNum)
+	//fmt.Println(num, denom)
+	//roundToStepBigInt(k, denom)
+	//roundToStepBigInt(k, s.stepNum)
+	//fmt.Println(k)
+	roundToStepBigInt(k, new(big.Int).Mul(s.stepNum, denom))
+	//fmt.Println(k)
+	k.Quo(k, denom)
+	//k.Quo(k, s.stepDenom)
+	k.Sub(k, s.minNum)
+	fmt.Println(k, s.stepDenom)
+	roundToStepBigInt(k, s.stepNum)
+	return k
 }
 
 func (s *Stepper) fromDiffNum(n *big.Int) *big.Rat {
-	return new(big.Rat).Add(s.minRat, new(big.Rat).SetFrac(n, s.stepDenom))
+	//fmt.Println(new(big.Int).Add(s.minNum, n), s.stepNum)
+	//k := new(big.Rat).SetFrac(new(big.Int).Add(s.minNum, n), s.stepDenom)
+	//normalizeBigRat(k)
+	//return k
+	roundToStepBigInt(n, s.stepNum)
+	num, denom := new(big.Int).Add(s.minNum, n), new(big.Int).Set(s.stepDenom)
+	fmt.Println(num, denom)
+	//normalizeNumDenom(num, denom)
+	//fmt.Println(num, denom)
+	//num, denom = splitBigRat(new(big.Rat).SetFrac(num, denom))
+	return new(big.Rat).SetFrac(num, denom)
 }
 
 func (s *Stepper) exactFromNum(n *big.Int, iterCount int) (f float64, exact bool) {

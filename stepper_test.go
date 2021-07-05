@@ -6,12 +6,36 @@ import (
 	"github.com/goinsane/xmath"
 )
 
-func ExampleStepper() {
-	s, err := xmath.NewStepper(0.33, 2.25, 0.60)
+func ExampleStepper_Normalize_step0_1_max5_0_min__2_5() {
+	s, err := xmath.NewStepper(0.1, 5.0, -2.0)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(s.Normalize(1.5))
+	var x, y float64
+	x = 3.04
+	y, err = s.Normalize(x)
+	fmt.Printf("normalize of %v: %v err=%v\n", x, y, err)
+	x = 3.05
+	y, err = s.Normalize(x)
+	fmt.Printf("normalize of %v: %v err=%v\n", x, y, err)
+	x = 3.06
+	y, err = s.Normalize(x)
+	fmt.Printf("normalize of %v: %v err=%v\n", x, y, err)
+	x = 2.16
+	y, err = s.Normalize(x)
+	fmt.Printf("normalize of %v: %v err=%v\n", x, y, err)
+	x = -1.64
+	y, err = s.Normalize(x)
+	fmt.Printf("normalize of %v: %v err=%v\n", x, y, err)
+	x = -1.65
+	y, err = s.Normalize(x)
+	fmt.Printf("normalize of %v: %v err=%v\n", x, y, err)
+	x = -1.66
+	y, err = s.Normalize(x)
+	fmt.Printf("normalize of %v: %v err=%v\n", x, y, err)
+
+	y, err = s.Step(45)
+	fmt.Printf("%v %v\n", y, err)
 
 	// Output:
 	// aa
@@ -63,6 +87,7 @@ func ExampleStepper_Normalize_cc() {
 	fmt.Println(s.Normalize(1.26))
 	fmt.Println(s.Normalize(1.74))
 	fmt.Println(s.Normalize(1.75))
+	fmt.Println(s.Normalize(0.8))
 	fmt.Println(s.Count())
 	fmt.Println(s.Step(5))
 
