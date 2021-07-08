@@ -7,11 +7,17 @@ import (
 )
 
 func ExampleStepper() {
-	s, err := xmath.NewStepper(0.33, 2.25, 0.60)
+	s, err := xmath.NewStepper(0.341, 2.5, 0.0)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(s.Normalize(1.5))
+	//fmt.Println(s.Normalize(1.25))
+	//return
+	for i := 0; i < 100; i++ {
+		x, _ := s.Step(int64(i))
+		//fmt.Println(x)
+		_ = x
+	}
 
 	// Output:
 	// aa
@@ -47,6 +53,7 @@ func ExampleStepper_Normalize_bb() {
 	fmt.Println(s.Normalize(1.2))
 	fmt.Println(s.Normalize(1.374))
 	fmt.Println(s.Normalize(1.375))
+	fmt.Println(s.Normalize(1.376))
 	fmt.Println(s.Count())
 
 	// Output:
@@ -54,7 +61,7 @@ func ExampleStepper_Normalize_bb() {
 }
 
 func ExampleStepper_Normalize_cc() {
-	s, err := xmath.NewStepper(0.5, 3.0, 1.0)
+	s, err := xmath.NewStepper(0.1, 3.0, 1.0)
 	if err != nil {
 		panic(err)
 	}
