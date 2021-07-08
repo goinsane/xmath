@@ -100,11 +100,11 @@ func RoundBigRat(x *big.Rat) *big.Int {
 	switch t := r.Sign(); {
 	case t < 0:
 		if r.Cmp(new(big.Int).Sub(big.NewInt(0), denomHalf)) < 0 {
-			n.Sub(n, big.NewInt(1))
+			n.Add(n, big.NewInt(-1))
 		}
 	case t > 0:
 		if r.Cmp(denomHalf) >= 0 {
-			n.Add(n, big.NewInt(1))
+			n.Add(n, big.NewInt(+1))
 		}
 	}
 	return n
