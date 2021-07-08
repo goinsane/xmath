@@ -95,6 +95,15 @@ func ExampleMaxMinInt() {
 	// max=+7 and min=-8 of [-1 -8 +7 -3 +5]
 }
 
+func ExampleMaxMinUint() {
+	list := []uint64{+1, +8, +7, +3, +5}
+	max, min := xmath.MaxMinUint(list...)
+	fmt.Printf("max=%+d and min=%+d of %+d\n", max, min, list)
+
+	// Output:
+	// max=+8 and min=+1 of [+1 +8 +7 +3 +5]
+}
+
 func ExampleBetween() {
 	var x float64
 	interval := []float64{+3.1416, +1.4142}

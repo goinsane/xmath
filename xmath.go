@@ -195,6 +195,74 @@ func MinMaxInt(x ...int64) (min int64, max int64) {
 	return
 }
 
+// MaxUint returns the larger unsigned integer of x...
+//
+// Special cases are:
+//	MaxUint(x) = x
+//	MaxUint() = math.MaxUint64
+func MaxUint(x ...uint64) uint64 {
+	if len(x) <= 0 {
+		return uint64(math.MaxUint64)
+	}
+	result := uint64(0)
+	for _, a := range x {
+		if a > result {
+			result = a
+		}
+	}
+	return result
+}
+
+// MinUint returns the smaller unsigned integer of x...
+//
+// Special cases are:
+//	MinUint(x) = x
+//	MinUint() = 0
+func MinUint(x ...uint64) uint64 {
+	if len(x) <= 0 {
+		return uint64(0)
+	}
+	result := uint64(math.MaxUint64)
+	for _, a := range x {
+		if a < result {
+			result = a
+		}
+	}
+	return result
+}
+
+// MaxMinUint returns the max, min unsigned integers in this order, similar with MaxUint and MinUint functions.
+//
+// Special cases are:
+//	MaxMinUint(x) = x, x
+//	MaxMinUint() = math.MaxUint64, 0
+func MaxMinUint(x ...uint64) (max uint64, min uint64) {
+	min, max = MinMaxUint(x...)
+	return
+}
+
+// MinMaxUint returns the min, max unsigned integers in this order, similar with MinUint and MaxUint functions.
+//
+// Special cases are:
+//	MinMaxUint(x) = x, x
+//	MinMaxUint() = 0, math.MaxUint64
+func MinMaxUint(x ...uint64) (min uint64, max uint64) {
+	if len(x) <= 0 {
+		return uint64(0), uint64(math.MaxUint64)
+	}
+	min = uint64(math.MaxUint64)
+	max = uint64(0)
+	for _, a := range x {
+		if a < min {
+			min = a
+		}
+		if a > max {
+			max = a
+		}
+	}
+	return
+}
+
 // Between checks x is between a and b
 func Between(x float64, a, b float64) bool {
 	min, max := MinMax(a, b)
@@ -207,8 +275,8 @@ func BetweenIn(x float64, a, b float64) bool {
 	return min <= x && x <= max
 }
 
-// SafeDiv divides x to y without 'division by zero' error.
-// Using this function is not necessary in GoLang. Because GoLang's default behaviour is same with this function.
+// SafeDiv divides x to y. For 'division by zero', it returns 0 if allowNaN is false.
+// The GoLang's default behaviour is same with SafeDiv(x, y, true).
 // Special cases are:
 //	SafeDiv(0, ±n, true) = ±0
 //	SafeDiv(0, ±n, false) = ±0
