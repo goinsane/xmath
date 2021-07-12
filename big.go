@@ -6,6 +6,7 @@ import (
 )
 
 // FloorBigFloat returns the greatest integer value less than or equal to x.
+// It returns nil if x is an infinity.
 func FloorBigFloat(x *big.Float) *big.Int {
 	n, acc := x.Int(nil)
 	if acc == big.Above {
@@ -15,6 +16,7 @@ func FloorBigFloat(x *big.Float) *big.Int {
 }
 
 // CeilBigFloat returns the least integer value greater than or equal to x.
+// It returns nil if x is an infinity.
 func CeilBigFloat(x *big.Float) *big.Int {
 	n, acc := x.Int(nil)
 	if acc == big.Below {
@@ -24,6 +26,7 @@ func CeilBigFloat(x *big.Float) *big.Int {
 }
 
 // RoundBigFloat returns the nearest integer, rounding half away from zero.
+// It returns nil if x is an infinity.
 func RoundBigFloat(x *big.Float) *big.Int {
 	z := new(big.Float).Copy(x)
 	return FloorBigFloat(z.Add(z, big.NewFloat(0.5)))
