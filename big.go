@@ -25,7 +25,8 @@ func CeilBigFloat(x *big.Float) *big.Int {
 
 // RoundBigFloat returns the nearest integer, rounding half away from zero.
 func RoundBigFloat(x *big.Float) *big.Int {
-	return FloorBigFloat(new(big.Float).Add(x, big.NewFloat(0.5)))
+	z := new(big.Float).Copy(x)
+	return FloorBigFloat(z.Add(z, big.NewFloat(0.5)))
 }
 
 // IntBigRat returns the result of truncating x towards zero.
