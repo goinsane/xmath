@@ -13,7 +13,7 @@ type Number struct {
 	k    *big.Float
 }
 
-func NewNumber(prec int, base int) *Number {
+func NewNumber(prec, base int) *Number {
 	checkInvalidBase(base)
 	return &Number{
 		prec: prec,
@@ -82,6 +82,9 @@ func (z *Number) SetFloatPrec(prec uint) *Number {
 }
 
 func (z *Number) round() {
+	if z.f.IsInf() {
+		return
+	}
 	z.f.Mul(z.f, z.k)
 	z.f.Add(z.f, big.NewFloat(0.5))
 	z.f.SetInt(FloorBigFloat(z.f))
@@ -279,7 +282,7 @@ func (x *Number) Text(format byte, prec int) string {
 }
 
 func (x *Number) Uint64() (uint64, big.Accuracy) {
-	return x.Uint64()
+	return x.f.Uint64()
 }
 
 func (z *Number) UnmarshalText(text []byte) error {
