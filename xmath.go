@@ -7,35 +7,36 @@ import (
 	"math/big"
 )
 
+const (
+	MinBase = 2
+	MaxBase = 36
+)
+
 // FloorP returns the greatest value less than or equal to x with specified decimal precision.
-func FloorP(x float64, p int) float64 {
-	k := math.Pow10(p)
+func FloorP(x float64, prec int) float64 {
+	k := math.Pow10(prec)
 	return math.Floor(x*k) / k
 }
 
 // FloorPB returns the greatest value less than or equal to x with specified precision of base.
 // It panics unless 2 <= base <= 36.
-func FloorPB(x float64, p int, base int) float64 {
-	if base < 2 || base > 36 {
-		panic("invalid base")
-	}
-	k := math.Pow(float64(base), float64(p))
+func FloorPB(x float64, prec int, base int) float64 {
+	checkInvalidBase(base)
+	k := math.Pow(float64(base), float64(prec))
 	return math.Floor(x*k) / k
 }
 
 // CeilP returns the least value greater than or equal to x with specified decimal precision.
-func CeilP(x float64, p int) float64 {
-	k := math.Pow10(p)
+func CeilP(x float64, prec int) float64 {
+	k := math.Pow10(prec)
 	return math.Ceil(x*k) / k
 }
 
 // CeilPB returns the least value greater than or equal to x with specified precision of base.
 // It panics unless 2 <= base <= 36.
-func CeilPB(x float64, p int, base int) float64 {
-	if base < 2 || base > 36 {
-		panic("invalid base")
-	}
-	k := math.Pow(float64(base), float64(p))
+func CeilPB(x float64, prec int, base int) float64 {
+	checkInvalidBase(base)
+	k := math.Pow(float64(base), float64(prec))
 	return math.Ceil(x*k) / k
 }
 
@@ -45,18 +46,16 @@ func Round(x float64) float64 {
 }
 
 // RoundP returns the nearest integer value, rounding half away from zero with specified decimal precision.
-func RoundP(x float64, p int) float64 {
-	k := math.Pow10(p)
+func RoundP(x float64, prec int) float64 {
+	k := math.Pow10(prec)
 	return math.Floor(x*k+0.5) / k
 }
 
 // RoundPB returns the nearest integer value, rounding half away from zero with specified precision of base.
 // It panics unless 2 <= base <= 36.
-func RoundPB(x float64, p int, base int) float64 {
-	if base < 2 || base > 36 {
-		panic("invalid base")
-	}
-	k := math.Pow(float64(base), float64(p))
+func RoundPB(x float64, prec int, base int) float64 {
+	checkInvalidBase(base)
+	k := math.Pow(float64(base), float64(prec))
 	return math.Floor(x*k+0.5) / k
 }
 
@@ -567,4 +566,10 @@ func Equal(x ...float64) bool {
 // It may return true even exponential isn't zero.
 func IsZero(x float64) bool {
 	return math.Float64bits(x)<<12 == 0
+}
+
+func checkInvalidBase(base int) {
+	if base < MinBase || base > MaxBase {
+		panic("invalid base")
+	}
 }
