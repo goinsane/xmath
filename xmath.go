@@ -10,6 +10,23 @@ import (
 const (
 	MinBase = 2
 	MaxBase = 36
+
+	MaxInt8Value   = 1<<7 - 1
+	MinInt8Value   = -1 << 7
+	MaxInt16Value  = 1<<15 - 1
+	MinInt16Value  = -1 << 15
+	MaxInt32Value  = 1<<31 - 1
+	MinInt32Value  = -1 << 31
+	MaxInt64Value  = 1<<63 - 1
+	MinInt64Value  = -1 << 63
+	MaxUint8Value  = 1<<8 - 1
+	MaxUint16Value = 1<<16 - 1
+	MaxUint32Value = 1<<32 - 1
+	MaxUint64Value = 1<<64 - 1
+	MaxIntValue    = 1<<(UintSize-1) - 1
+	MinIntValue    = -1 << (UintSize - 1)
+	MaxUintValue   = 1<<UintSize - 1
+	UintSize       = 32 << (^uint(0) >> 32 & 1)
 )
 
 // FloorP returns the greatest value less than or equal to x with specified decimal precision.
