@@ -6,8 +6,8 @@ import (
 	"github.com/goinsane/xmath"
 )
 
-func ExampleNumber() {
-	n := new(xmath.Number)
+func ExampleReal() {
+	n := new(xmath.Real)
 	for i := 0; i < 20; i++ {
 		k := 0.25 * float64(i)
 		n.SetFloat64(k)

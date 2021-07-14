@@ -6,23 +6,23 @@ import (
 	"math/big"
 )
 
-// Number is a big.Float like implementation for integers and real numbers.
-// It rounds the big.Float to half away from zero after all of writing operations.
-// A Number can be created with new(Number) or NewNumber and etc.
-// A Number which is created by new(Number) has precision 0 and base 10.
-// Both of precision and base, can't change after the Number created.
-type Number struct {
+// Real is a big.Float like implementation for real numbers.
+// It rounds the big.Float to half away from zero by given precision and base after all of writing operations.
+// A Real can be created with new(Real) or NewReal and etc.
+// A Real which is created by new(Real) has precision 0 and base 10.
+// Both of precision and base, can't change after the Real created.
+type Real struct {
 	prec int
 	base int
 	f    *big.Float
 	k    *big.Float
 }
 
-// NewNumber returns a new Number with given precision and base.
-// Calling the NewNumber, isn't necessary to create new Number.
-func NewNumber(prec, base int) *Number {
+// NewReal returns a new Real with given precision and base.
+// Calling the NewReal, isn't necessary to create new Real.
+func NewReal(prec, base int) *Real {
 	checkInvalidBase(base)
-	return &Number{
+	return &Real{
 		prec: prec,
 		base: base,
 		f:    big.NewFloat(0),
@@ -30,27 +30,27 @@ func NewNumber(prec, base int) *Number {
 	}
 }
 
-// NewBinary returns a new Number with base 2.
-func NewBinary(prec int) *Number {
-	return NewNumber(prec, 2)
+// NewBinary returns a new Real with base 2.
+func NewBinary(prec int) *Real {
+	return NewReal(prec, 2)
 }
 
-// NewOctal returns a new Number with base 8.
-func NewOctal(prec int) *Number {
-	return NewNumber(prec, 8)
+// NewOctal returns a new Real with base 8.
+func NewOctal(prec int) *Real {
+	return NewReal(prec, 8)
 }
 
-// NewDecimal returns a new Number with base 10.
-func NewDecimal(prec int) *Number {
-	return NewNumber(prec, 10)
+// NewDecimal returns a new Real with base 10.
+func NewDecimal(prec int) *Real {
+	return NewReal(prec, 10)
 }
 
-// NewHexdecimal returns a new Number with base 16.
-func NewHexdecimal(prec int) *Number {
-	return NewNumber(prec, 16)
+// NewHexdecimal returns a new Real with base 16.
+func NewHexdecimal(prec int) *Real {
+	return NewReal(prec, 16)
 }
 
-func (z *Number) init() {
+func (z *Real) init() {
 	if z.base != 0 {
 		return
 	}
@@ -59,44 +59,44 @@ func (z *Number) init() {
 	z.k = big.NewFloat(1)
 }
 
-// Prec returns precision of the Number.
-func (x *Number) Prec() int {
+// Prec returns precision of the Real.
+func (x *Real) Prec() int {
 	x.init()
 	return x.prec
 }
 
-// Base returns base of the Number.
-func (x *Number) Base() int {
+// Base returns base of the Real.
+func (x *Real) Base() int {
 	x.init()
 	return x.base
 }
 
 // Float returns a copy of big.Float value.
-func (x *Number) Float() *big.Float {
+func (x *Real) Float() *big.Float {
 	x.init()
 	return new(big.Float).Copy(x.f)
 }
 
 // FloatMinPrec is similar with MinPrec method of big.Float.
-func (x *Number) FloatMinPrec() uint {
+func (x *Real) FloatMinPrec() uint {
 	x.init()
 	return x.f.MinPrec()
 }
 
 // FloatMode is similar with Mode method of big.Float.
-func (x *Number) FloatMode() big.RoundingMode {
+func (x *Real) FloatMode() big.RoundingMode {
 	x.init()
 	return x.f.Mode()
 }
 
 // FloatPrec is similar with Prec method of big.Float.
-func (x *Number) FloatPrec() uint {
+func (x *Real) FloatPrec() uint {
 	x.init()
 	return x.f.Prec()
 }
 
 // SetFloat is similar with Set except that x is big.Float.
-func (z *Number) SetFloat(x *big.Float) *Number {
+func (z *Real) SetFloat(x *big.Float) *Real {
 	z.init()
 	defer z.round()
 	z.f.Set(x)
@@ -104,7 +104,7 @@ func (z *Number) SetFloat(x *big.Float) *Number {
 }
 
 // SetFloatMode is similar with SetMode method of big.Float.
-func (z *Number) SetFloatMode(mode big.RoundingMode) *Number {
+func (z *Real) SetFloatMode(mode big.RoundingMode) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetMode(mode)
@@ -112,14 +112,14 @@ func (z *Number) SetFloatMode(mode big.RoundingMode) *Number {
 }
 
 // SetFloatPrec is similar with SetPrec method of big.Float.
-func (z *Number) SetFloatPrec(prec uint) *Number {
+func (z *Real) SetFloatPrec(prec uint) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetPrec(prec)
 	return z
 }
 
-func (z *Number) round() {
+func (z *Real) round() {
 	if z.f.IsInf() {
 		return
 	}
@@ -130,7 +130,7 @@ func (z *Number) round() {
 }
 
 // Abs is similar with Abs method of big.Float.
-func (z *Number) Abs(x *Number) *Number {
+func (z *Real) Abs(x *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Abs(x.f)
@@ -138,19 +138,19 @@ func (z *Number) Abs(x *Number) *Number {
 }
 
 // Acc is similar with Acc method of big.Float.
-func (x *Number) Acc() big.Accuracy {
+func (x *Real) Acc() big.Accuracy {
 	x.init()
 	return x.f.Acc()
 }
 
 // Append is similar with Append method of big.Float.
-func (x *Number) Append(buf []byte, fmt byte, prec int) []byte {
+func (x *Real) Append(buf []byte, fmt byte, prec int) []byte {
 	x.init()
 	return x.f.Append(buf, fmt, prec)
 }
 
 // Add is similar with Add method of big.Float.
-func (z *Number) Add(x, y *Number) *Number {
+func (z *Real) Add(x, y *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Add(x.f, y.f)
@@ -158,13 +158,13 @@ func (z *Number) Add(x, y *Number) *Number {
 }
 
 // Cmp is similar with Cmp method of big.Float.
-func (x *Number) Cmp(y *Number) int {
+func (x *Real) Cmp(y *Real) int {
 	x.init()
 	return x.f.Cmp(y.f)
 }
 
 // Copy is similar with Copy method of big.Float.
-func (z *Number) Copy(x *Number) *Number {
+func (z *Real) Copy(x *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Copy(x.f)
@@ -172,74 +172,74 @@ func (z *Number) Copy(x *Number) *Number {
 }
 
 // Float32 is similar with Float32 method of big.Float.
-func (x *Number) Float32() (float32, big.Accuracy) {
+func (x *Real) Float32() (float32, big.Accuracy) {
 	x.init()
 	return x.f.Float32()
 }
 
 // Float64 is similar with Float64 method of big.Float.
-func (x *Number) Float64() (float64, big.Accuracy) {
+func (x *Real) Float64() (float64, big.Accuracy) {
 	x.init()
 	return x.f.Float64()
 }
 
 // Format is similar with Format method of big.Float.
-func (x *Number) Format(s fmt.State, format rune) {
+func (x *Real) Format(s fmt.State, format rune) {
 	x.init()
 	x.f.Format(s, format)
 }
 
 // GobDecode is similar with GobDecode method of big.Float.
-func (z *Number) GobDecode(buf []byte) error {
+func (z *Real) GobDecode(buf []byte) error {
 	z.init()
 	defer z.round()
 	return z.f.GobDecode(buf)
 }
 
 // GobEncode is similar with GobEncode method of big.Float.
-func (x *Number) GobEncode() ([]byte, error) {
+func (x *Real) GobEncode() ([]byte, error) {
 	x.init()
 	return x.f.GobEncode()
 }
 
 // Int is similar with Int method of big.Float.
-func (x *Number) Int(z *big.Int) (*big.Int, big.Accuracy) {
+func (x *Real) Int(z *big.Int) (*big.Int, big.Accuracy) {
 	x.init()
 	return x.f.Int(z)
 }
 
 // Int64 is similar with Int64 method of big.Float.
-func (x *Number) Int64() (int64, big.Accuracy) {
+func (x *Real) Int64() (int64, big.Accuracy) {
 	x.init()
 	return x.f.Int64()
 }
 
 // IsInf is similar with IsInf method of big.Float.
-func (x *Number) IsInf() bool {
+func (x *Real) IsInf() bool {
 	x.init()
 	return x.f.IsInf()
 }
 
 // IsInt is similar with IsInt method of big.Float.
-func (x *Number) IsInt() bool {
+func (x *Real) IsInt() bool {
 	x.init()
 	return x.f.IsInt()
 }
 
 // MantExp is similar with MantExp method of big.Float.
-func (x *Number) MantExp(mant *Number) (exp int) {
+func (x *Real) MantExp(mant *Real) (exp int) {
 	x.init()
 	return x.f.MantExp(mant.f)
 }
 
 // MarshalText is similar with MarshalText method of big.Float.
-func (x *Number) MarshalText() (text []byte, err error) {
+func (x *Real) MarshalText() (text []byte, err error) {
 	x.init()
 	return x.f.MarshalText()
 }
 
 // Mul is similar with Mul method of big.Float.
-func (z *Number) Mul(x, y *Number) *Number {
+func (z *Real) Mul(x, y *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Mul(x.f, y.f)
@@ -247,7 +247,7 @@ func (z *Number) Mul(x, y *Number) *Number {
 }
 
 // Neg is similar with Neg method of big.Float.
-func (z *Number) Neg(x *Number) *Number {
+func (z *Real) Neg(x *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Neg(x.f)
@@ -255,7 +255,7 @@ func (z *Number) Neg(x *Number) *Number {
 }
 
 // Parse is similar with Parse method of big.Float.
-func (z *Number) Parse(s string, base int) (n *Number, b int, err error) {
+func (z *Real) Parse(s string, base int) (r *Real, b int, err error) {
 	z.init()
 	defer z.round()
 	_, b, err = z.f.Parse(s, base)
@@ -263,7 +263,7 @@ func (z *Number) Parse(s string, base int) (n *Number, b int, err error) {
 }
 
 // Quo is similar with Quo method of big.Float.
-func (z *Number) Quo(x, y *Number) *Number {
+func (z *Real) Quo(x, y *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Quo(x.f, y.f)
@@ -271,20 +271,20 @@ func (z *Number) Quo(x, y *Number) *Number {
 }
 
 // Rat is similar with Rat method of big.Float.
-func (x *Number) Rat(z *big.Rat) (*big.Rat, big.Accuracy) {
+func (x *Real) Rat(z *big.Rat) (*big.Rat, big.Accuracy) {
 	x.init()
 	return x.f.Rat(z)
 }
 
 // Scan is similar with Scan method of big.Float.
-func (z *Number) Scan(s fmt.ScanState, ch rune) error {
+func (z *Real) Scan(s fmt.ScanState, ch rune) error {
 	z.init()
 	defer z.round()
 	return z.f.Scan(s, ch)
 }
 
 // Set is similar with Set method of big.Float.
-func (z *Number) Set(x *Number) *Number {
+func (z *Real) Set(x *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Set(x.f)
@@ -292,7 +292,7 @@ func (z *Number) Set(x *Number) *Number {
 }
 
 // SetFloat64 is similar with SetFloat64 method of big.Float.
-func (z *Number) SetFloat64(x float64) *Number {
+func (z *Real) SetFloat64(x float64) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetFloat64(x)
@@ -300,7 +300,7 @@ func (z *Number) SetFloat64(x float64) *Number {
 }
 
 // SetInf is similar with SetInf method of big.Float.
-func (z *Number) SetInf(signbit bool) *Number {
+func (z *Real) SetInf(signbit bool) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetInf(signbit)
@@ -308,7 +308,7 @@ func (z *Number) SetInf(signbit bool) *Number {
 }
 
 // SetInt is similar with SetInt method of big.Float.
-func (z *Number) SetInt(x *big.Int) *Number {
+func (z *Real) SetInt(x *big.Int) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetInt(x)
@@ -316,7 +316,7 @@ func (z *Number) SetInt(x *big.Int) *Number {
 }
 
 // SetInt64 is similar with SetInt64 method of big.Float.
-func (z *Number) SetInt64(x int64) *Number {
+func (z *Real) SetInt64(x int64) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetInt64(x)
@@ -324,7 +324,7 @@ func (z *Number) SetInt64(x int64) *Number {
 }
 
 // SetMantExp is similar with SetMantExp method of big.Float.
-func (z *Number) SetMantExp(mant *Number, exp int) *Number {
+func (z *Real) SetMantExp(mant *Real, exp int) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetMantExp(mant.f, exp)
@@ -332,7 +332,7 @@ func (z *Number) SetMantExp(mant *Number, exp int) *Number {
 }
 
 // SetRat is similar with SetRat method of big.Float.
-func (z *Number) SetRat(x *big.Rat) *Number {
+func (z *Real) SetRat(x *big.Rat) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetRat(x)
@@ -340,7 +340,7 @@ func (z *Number) SetRat(x *big.Rat) *Number {
 }
 
 // SetString is similar with SetString method of big.Float.
-func (z *Number) SetString(s string) (n *Number, ok bool) {
+func (z *Real) SetString(s string) (r *Real, ok bool) {
 	z.init()
 	defer z.round()
 	_, ok = z.f.SetString(s)
@@ -348,7 +348,7 @@ func (z *Number) SetString(s string) (n *Number, ok bool) {
 }
 
 // SetUint64 is similar with SetUint64 method of big.Float.
-func (z *Number) SetUint64(x uint64) *Number {
+func (z *Real) SetUint64(x uint64) *Real {
 	z.init()
 	defer z.round()
 	z.f.SetUint64(x)
@@ -356,19 +356,19 @@ func (z *Number) SetUint64(x uint64) *Number {
 }
 
 // Sign is similar with Sign method of big.Float.
-func (x *Number) Sign() int {
+func (x *Real) Sign() int {
 	x.init()
 	return x.f.Sign()
 }
 
 // Signbit is similar with Signbit method of big.Float.
-func (x *Number) Signbit() bool {
+func (x *Real) Signbit() bool {
 	x.init()
 	return x.f.Signbit()
 }
 
 // Sqrt is similar with Sqrt method of big.Float.
-func (z *Number) Sqrt(x *Number) *Number {
+func (z *Real) Sqrt(x *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Sqrt(x.f)
@@ -376,13 +376,13 @@ func (z *Number) Sqrt(x *Number) *Number {
 }
 
 // String is similar with String method of big.Float.
-func (x *Number) String() string {
+func (x *Real) String() string {
 	x.init()
 	return x.f.String()
 }
 
 // Sub is similar with Sub method of big.Float.
-func (z *Number) Sub(x, y *Number) *Number {
+func (z *Real) Sub(x, y *Real) *Real {
 	z.init()
 	defer z.round()
 	z.f.Sub(x.f, y.f)
@@ -390,19 +390,19 @@ func (z *Number) Sub(x, y *Number) *Number {
 }
 
 // Text is similar with Text method of big.Float.
-func (x *Number) Text(format byte, prec int) string {
+func (x *Real) Text(format byte, prec int) string {
 	x.init()
 	return x.f.Text(format, prec)
 }
 
 // Uint64 is similar with Uint64 method of big.Float.
-func (x *Number) Uint64() (uint64, big.Accuracy) {
+func (x *Real) Uint64() (uint64, big.Accuracy) {
 	x.init()
 	return x.f.Uint64()
 }
 
 // UnmarshalText is similar with UnmarshalText method of big.Float.
-func (z *Number) UnmarshalText(text []byte) error {
+func (z *Real) UnmarshalText(text []byte) error {
 	z.init()
 	defer z.round()
 	return z.f.UnmarshalText(text)
