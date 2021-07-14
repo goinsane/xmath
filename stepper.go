@@ -16,16 +16,18 @@ var (
 	ErrStepperMinExceeded     = errors.New("min exceeded")
 )
 
+// Stepper is a utility to
 type Stepper struct {
-	prec     int
-	base     int
-	stepReal *Real
-	maxReal  *Real
-	minReal  *Real
-	step     float64
-	max      float64
-	min      float64
-	count    int64
+	prec       int
+	base       int
+	stepReal   *Real
+	maxReal    *Real
+	minReal    *Real
+	intrvlReal *Real
+	step       float64
+	max        float64
+	min        float64
+	count      int64
 }
 
 func NewStepper(prec, base int, step, max, min float64) (s *Stepper, err error) {
@@ -41,27 +43,30 @@ func NewStepper(prec, base int, step, max, min float64) (s *Stepper, err error) 
 		s.step = f
 	}
 	s.maxReal = s.newReal().SetFloat64(max)
-	if f, acc := s.maxReal.Float64(); f != max || acc != big.Exact || math.Nextafter(max, math.Inf(+1))-max >= step {
+	if f, acc := s.maxReal.Float64(); f != max || acc != big.Exact || (!math.IsInf(max, 0) && math.Nextafter(max, math.Inf(+1))-max >= step) {
 		return nil, ErrStepperMaxOverflow
 	} else {
 		s.max = f
 	}
 	s.minReal = s.newReal().SetFloat64(min)
-	if f, acc := s.minReal.Float64(); f != min || acc != big.Exact || min-math.Nextafter(min, math.Inf(-1)) >= step {
+	if f, acc := s.minReal.Float64(); f != min || acc != big.Exact || (!math.IsInf(min, 0) && min-math.Nextafter(min, math.Inf(-1)) >= step) {
 		return nil, ErrStepperMinOverflow
 	} else {
 		s.min = f
 	}
-	r := s.newReal().Quo(s.newReal().Sub(s.maxReal, s.minReal), s.stepReal)
-	count, acc := r.Int64()
-	if !r.IsInt() || acc != big.Exact {
-		return nil, ErrStepperRangeOverflow
-	}
-	if count < 0 {
+	s.intrvlReal = s.newReal().Sub(s.maxReal, s.minReal)
+	r := s.newReal().Quo(s.intrvlReal, s.stepReal)
+	if r.Cmp(s.newReal()) < 0 {
 		return nil, ErrStepperUnorderedMaxMin
 	}
-	count++
-	s.count = count
+	if !r.IsInf() {
+		count, acc := r.Int64()
+		if !r.IsInt() || acc != big.Exact {
+			return nil, ErrStepperRangeOverflow
+		}
+		count++
+		s.count = count
+	}
 	return s, nil
 }
 
@@ -93,13 +98,17 @@ func (s *Stepper) Step(index int) (float64, error) {
 }
 
 func (s *Stepper) Step64(index int64) (float64, error) {
-	if index >= s.count {
-		return s.max, ErrStepperMaxExceeded
+	minReal := s.newReal()
+	if !s.intrvlReal.IsInf() {
+		if index >= s.count {
+			return s.max, ErrStepperMaxExceeded
+		}
+		if index < 0 {
+			return s.min, ErrStepperMinExceeded
+		}
+		minReal.Copy(s.minReal)
 	}
-	if index < 0 {
-		return s.min, ErrStepperMinExceeded
-	}
-	f, acc := s.newReal().Add(s.minReal, s.newReal().Mul(s.newReal().SetInt64(index), s.stepReal)).Float64()
+	f, acc := s.newReal().Add(s.newReal().Mul(s.newReal().SetInt64(index), s.stepReal), minReal).Float64()
 	if acc != big.Exact {
 		panic("bug: result not exact")
 	}
@@ -107,14 +116,21 @@ func (s *Stepper) Step64(index int64) (float64, error) {
 }
 
 func (s *Stepper) Normalize(f float64) (float64, error) {
-	if math.IsInf(f, +1) {
-		return math.Inf(+1), ErrStepperMaxExceeded
+	minReal := s.newReal()
+	if !s.intrvlReal.IsInf() {
+		if math.IsInf(f, +1) {
+			return f, ErrStepperMaxExceeded
+		}
+		if math.IsInf(f, -1) {
+			return f, ErrStepperMinExceeded
+		}
+		minReal.Copy(s.minReal)
 	}
-	if math.IsInf(f, -1) {
-		return math.Inf(-1), ErrStepperMinExceeded
+	if math.IsInf(f, 0) {
+		return f, nil
 	}
 	if math.IsNaN(f) {
-		return math.NaN(), nil
+		return f, nil
 	}
-	return s.Step64(RoundBigFloat(s.newReal().Quo(s.newReal().Sub(s.newReal().SetFloat64(f), s.minReal), s.stepReal).Float()).Int64())
+	return s.Step64(RoundBigFloat(s.newReal().Quo(s.newReal().Sub(s.newReal().SetFloat64(f), minReal), s.stepReal).Float()).Int64())
 }
