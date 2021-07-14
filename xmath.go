@@ -7,15 +7,53 @@ import (
 	"math/big"
 )
 
-// FloorP returns the greatest value less than or equal to x with specified precision.
-func FloorP(x float64, p int) float64 {
-	k := math.Pow10(p)
+const (
+	MinBase = 2
+	MaxBase = 36
+
+	MaxInt8Value   = 1<<7 - 1
+	MinInt8Value   = -1 << 7
+	MaxInt16Value  = 1<<15 - 1
+	MinInt16Value  = -1 << 15
+	MaxInt32Value  = 1<<31 - 1
+	MinInt32Value  = -1 << 31
+	MaxInt64Value  = 1<<63 - 1
+	MinInt64Value  = -1 << 63
+	MaxUint8Value  = 1<<8 - 1
+	MaxUint16Value = 1<<16 - 1
+	MaxUint32Value = 1<<32 - 1
+	MaxUint64Value = 1<<64 - 1
+	MaxIntValue    = 1<<(UintSize-1) - 1
+	MinIntValue    = -1 << (UintSize - 1)
+	MaxUintValue   = 1<<UintSize - 1
+	UintSize       = 32 << (^uint(0) >> 32 & 1)
+)
+
+// FloorP returns the greatest value less than or equal to x with specified decimal precision.
+func FloorP(x float64, prec int) float64 {
+	k := math.Pow10(prec)
 	return math.Floor(x*k) / k
 }
 
-// CeilP returns the least value greater than or equal to x with specified precision.
-func CeilP(x float64, p int) float64 {
-	k := math.Pow10(p)
+// FloorPB returns the greatest value less than or equal to x with specified precision of base.
+// It panics unless base is in valid range.
+func FloorPB(x float64, prec int, base int) float64 {
+	checkInvalidBase(base)
+	k := math.Pow(float64(base), float64(prec))
+	return math.Floor(x*k) / k
+}
+
+// CeilP returns the least value greater than or equal to x with specified decimal precision.
+func CeilP(x float64, prec int) float64 {
+	k := math.Pow10(prec)
+	return math.Ceil(x*k) / k
+}
+
+// CeilPB returns the least value greater than or equal to x with specified precision of base.
+// It panics unless base is in valid range.
+func CeilPB(x float64, prec int, base int) float64 {
+	checkInvalidBase(base)
+	k := math.Pow(float64(base), float64(prec))
 	return math.Ceil(x*k) / k
 }
 
@@ -24,9 +62,17 @@ func Round(x float64) float64 {
 	return math.Floor(x + 0.5)
 }
 
-// RoundP returns the nearest integer value, rounding half away from zero with specified precision.
-func RoundP(x float64, p int) float64 {
-	k := math.Pow10(p)
+// RoundP returns the nearest integer value, rounding half away from zero with specified decimal precision.
+func RoundP(x float64, prec int) float64 {
+	k := math.Pow10(prec)
+	return math.Floor(x*k+0.5) / k
+}
+
+// RoundPB returns the nearest integer value, rounding half away from zero with specified precision of base.
+// It panics unless base is in valid range.
+func RoundPB(x float64, prec int, base int) float64 {
+	checkInvalidBase(base)
+	k := math.Pow(float64(base), float64(prec))
 	return math.Floor(x*k+0.5) / k
 }
 
@@ -165,6 +211,74 @@ func MinMaxInt(x ...int64) (min int64, max int64) {
 	return
 }
 
+// MaxUint returns the larger unsigned integer of x...
+//
+// Special cases are:
+//	MaxUint(x) = x
+//	MaxUint() = math.MaxUint64
+func MaxUint(x ...uint64) uint64 {
+	if len(x) <= 0 {
+		return uint64(math.MaxUint64)
+	}
+	result := uint64(0)
+	for _, a := range x {
+		if a > result {
+			result = a
+		}
+	}
+	return result
+}
+
+// MinUint returns the smaller unsigned integer of x...
+//
+// Special cases are:
+//	MinUint(x) = x
+//	MinUint() = 0
+func MinUint(x ...uint64) uint64 {
+	if len(x) <= 0 {
+		return uint64(0)
+	}
+	result := uint64(math.MaxUint64)
+	for _, a := range x {
+		if a < result {
+			result = a
+		}
+	}
+	return result
+}
+
+// MaxMinUint returns the max, min unsigned integers in this order, similar with MaxUint and MinUint functions.
+//
+// Special cases are:
+//	MaxMinUint(x) = x, x
+//	MaxMinUint() = math.MaxUint64, 0
+func MaxMinUint(x ...uint64) (max uint64, min uint64) {
+	min, max = MinMaxUint(x...)
+	return
+}
+
+// MinMaxUint returns the min, max unsigned integers in this order, similar with MinUint and MaxUint functions.
+//
+// Special cases are:
+//	MinMaxUint(x) = x, x
+//	MinMaxUint() = 0, math.MaxUint64
+func MinMaxUint(x ...uint64) (min uint64, max uint64) {
+	if len(x) <= 0 {
+		return uint64(0), uint64(math.MaxUint64)
+	}
+	min = uint64(math.MaxUint64)
+	max = uint64(0)
+	for _, a := range x {
+		if a < min {
+			min = a
+		}
+		if a > max {
+			max = a
+		}
+	}
+	return
+}
+
 // Between checks x is between a and b
 func Between(x float64, a, b float64) bool {
 	min, max := MinMax(a, b)
@@ -177,37 +291,29 @@ func BetweenIn(x float64, a, b float64) bool {
 	return min <= x && x <= max
 }
 
-// SafeDiv divides x to y without 'division by zero' error.
-// Using this function is not necessary in GoLang. Because GoLang's default behaviour is same with this function.
+// SafeDiv divides x to y. For 'division by zero', it returns 0 if allowNaN is false.
+// The GoLang's default behaviour is same with SafeDiv(x, y, true).
 // Special cases are:
 //	SafeDiv(0, ±n, true) = ±0
+//	SafeDiv(0, ±n, false) = ±0
 //	SafeDiv(±n, 0, true) = ±Inf
+//	SafeDiv(±n, 0, false) = ±Inf
 //	SafeDiv(0, 0, true) = NaN
 //	SafeDiv(0, 0, false) = 0
 func SafeDiv(x, y float64, allowNaN bool) float64 {
 	if y == 0 {
-		if x == 0 {
-			if allowNaN {
-				return math.NaN()
-			}
-			return 0
-		}
 		if x < 0 {
 			return math.Inf(-1)
 		}
-		return math.Inf(+1)
+		if x > 0 {
+			return math.Inf(+1)
+		}
+		if allowNaN {
+			return math.NaN()
+		}
+		return 0
 	}
 	return x / y
-}
-
-// CryptoRand returns a random decimal number in [0, 1).
-// It returns -1 when error occurs.
-func CryptoRand() float64 {
-	r := CryptoRandInt(math.MaxInt64)
-	if r < 0 {
-		return -1
-	}
-	return float64(r) / math.MaxInt64
 }
 
 // CryptoRandInt returns a random integer in [0, max).
@@ -223,9 +329,19 @@ func CryptoRandInt(max int64) int64 {
 	return num.Int64()
 }
 
-// CryptoRandFloat is synonym with CryptoRand.
+// CryptoRandFloat returns a random decimal number in [0, 1).
+// It returns -1 when error occurs.
 func CryptoRandFloat() float64 {
-	return CryptoRand()
+	r := CryptoRandInt(math.MaxInt64)
+	if r < 0 {
+		return -1
+	}
+	return float64(r) / math.MaxInt64
+}
+
+// CryptoRand is synonym with CryptoRandFloat.
+func CryptoRand() float64 {
+	return CryptoRandFloat()
 }
 
 // CryptoRandCode generates random code in [10^(n-1), 10^n).
@@ -245,48 +361,232 @@ func CryptoRandCode(n int) int64 {
 	return start + r
 }
 
-// AlmostEqual64 checks equality of all given 64-bit floating points values.
-// It returns true if all values are equal.
+// AlmostEqualP64 checks almost equality of all given 64-bit floating points values.
+// Argument p is measure of precision. If p is 0, it checks exact equality.
+// It returns true if all values are almost equal.
 //
 // Special cases are:
-//	AlmostEqual64() = false
-//	AlmostEqual64(x) = true
-//	AlmostEqual64(NaN) = false
-//	AlmostEqual64(NaN, x) = false
-//	AlmostEqual64(x, NaN) = false
-func AlmostEqual64(x ...float64) bool {
+//	AlmostEqualP64(p) = false
+//	AlmostEqualP64(p, x) = true
+//	AlmostEqualP64(p, NaN) = false
+//	AlmostEqualP64(p, NaN, x) = false
+//	AlmostEqualP64(p, x, NaN) = false
+//	AlmostEqualP64(p, +Inf, +Inf) = true
+//	AlmostEqualP64(p, -Inf, -Inf) = true
+func AlmostEqualP64(p uint64, x ...float64) bool {
 	if len(x) <= 0 {
 		return false
 	}
-	var c float64
-	for i, a := range x {
-		if math.IsNaN(a) || (i > 0 && math.Abs(a-c) >= math.SmallestNonzeroFloat64) {
+	var a float64
+	for i, b := range x {
+		if math.IsNaN(b) {
 			return false
 		}
-		c = a
+		if i > 0 {
+			c, d := math.Float64bits(a), math.Float64bits(b)
+			if c < d {
+				c, d = d, c
+			}
+			if (c>>52 != d>>52) || c-d > p {
+				return false
+			}
+		}
+		a = b
 	}
 	return true
 }
 
-// AlmostEqual32 checks equality of all given 32-bit floating points values.
-// It returns true if all values are equal.
+// AlmostEqualP32 checks almost equality of all given 32-bit floating points values.
+// Argument p is measure of precision. If p is 0, it checks exact equality.
+// It returns true if all values are almost equal.
 //
 // Special cases are:
-//  AlmostEqual32() = false
-//  AlmostEqual32(x) = true
-//  AlmostEqual32(NaN) = false
-//  AlmostEqual32(NaN, x) = false
-//  AlmostEqual32(x, NaN) = false
-func AlmostEqual32(x ...float32) bool {
+//	AlmostEqualP32(p) = false
+//	AlmostEqualP32(p, x) = true
+//	AlmostEqualP32(p, NaN) = false
+//	AlmostEqualP32(p, NaN, x) = false
+//	AlmostEqualP32(p, x, NaN) = false
+//	AlmostEqualP32(p, +Inf, +Inf) = true
+//	AlmostEqualP32(p, -Inf, -Inf) = true
+func AlmostEqualP32(p uint32, x ...float32) bool {
 	if len(x) <= 0 {
 		return false
 	}
-	var c float32
-	for i, a := range x {
-		if math.IsNaN(float64(a)) || (i > 0 && math.Abs(float64(a-c)) >= math.SmallestNonzeroFloat32) {
+	var a float32
+	for i, b := range x {
+		if math.IsNaN(float64(b)) {
 			return false
 		}
-		c = a
+		if i > 0 {
+			c, d := math.Float32bits(a), math.Float32bits(b)
+			if c < d {
+				c, d = d, c
+			}
+			if (c>>23 != d>>23) || c-d > p {
+				return false
+			}
+		}
+		a = b
 	}
 	return true
+}
+
+// AlmostEqualP is synonym with AlmostEqualP64.
+func AlmostEqualP(p uint64, x ...float64) bool {
+	return AlmostEqualP64(p, x...)
+}
+
+// AlmostEqual64 is synonym with AlmostEqualP64(1, x...).
+func AlmostEqual64(x ...float64) bool {
+	return AlmostEqualP64(1, x...)
+}
+
+// AlmostEqual32 is synonym with AlmostEqualP32(1, x...).
+func AlmostEqual32(x ...float32) bool {
+	return AlmostEqualP32(1, x...)
+}
+
+// AlmostEqual is synonym with AlmostEqualP(1, x...).
+func AlmostEqual(x ...float64) bool {
+	return AlmostEqualP(1, x...)
+}
+
+// AlmostEqualD64 checks almost equality of all given 64-bit floating points values.
+// Argument d is the least difference value of inequality. If d is 0, it checks exact equality.
+// It returns true if all values are almost equal.
+//
+// Special cases are:
+//	AlmostEqualD64(d) = false
+//	AlmostEqualD64(d, x) = true
+//	AlmostEqualD64(d, NaN) = false
+//	AlmostEqualD64(d, NaN, x) = false
+//	AlmostEqualD64(d, x, NaN) = false
+//	AlmostEqualD64(d, +Inf, +Inf) = true
+//	AlmostEqualD64(d, -Inf, -Inf) = true
+func AlmostEqualD64(d float64, x ...float64) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float64
+	for i, b := range x {
+		if math.IsNaN(b) {
+			return false
+		}
+		if i > 0 && math.Abs(a-b) >= d {
+			return false
+		}
+		a = b
+	}
+	return true
+}
+
+// AlmostEqualD32 checks almost equality of all given 32-bit floating points values.
+// Argument d is the least difference value of inequality. If d is 0, it checks exact equality.
+// It returns true if all values are almost equal.
+//
+// Special cases are:
+//	AlmostEqualD32(d) = false
+//	AlmostEqualD32(d, x) = true
+//	AlmostEqualD32(d, NaN) = false
+//	AlmostEqualD32(d, NaN, x) = false
+//	AlmostEqualD32(d, x, NaN) = false
+//	AlmostEqualD32(d, +Inf, +Inf) = true
+//	AlmostEqualD32(d, -Inf, -Inf) = true
+func AlmostEqualD32(d float32, x ...float32) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float32
+	for i, b := range x {
+		if math.IsNaN(float64(b)) {
+			return false
+		}
+		if i > 0 && math.Abs(float64(a-b)) >= float64(d) {
+			return false
+		}
+		a = b
+	}
+	return true
+}
+
+// AlmostEqualD is synonym with AlmostEqualD64.
+func AlmostEqualD(d float64, x ...float64) bool {
+	return AlmostEqualD64(d, x...)
+}
+
+// Equal64 checks exact equality of all given 64-bit floating points values by comparing.
+// It returns true if all values are equal.
+//
+// Special cases are:
+//	Equal64() = false
+//	Equal64(x) = true
+//	Equal64(NaN) = false
+//	Equal64(NaN, x) = false
+//	Equal64(x, NaN) = false
+//	Equal64(+Inf, +Inf) = true
+//	Equal64(-Inf, -Inf) = true
+func Equal64(x ...float64) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float64
+	for i, b := range x {
+		if math.IsNaN(b) {
+			return false
+		}
+		if i > 0 {
+			if !math.IsNaN(a-b) && (a > b || a < b) {
+				return false
+			}
+		}
+		a = b
+	}
+	return true
+}
+
+// Equal32 checks exact equality of all given 32-bit floating points values by comparing.
+// It returns true if all values are equal.
+//
+// Special cases are:
+//	Equal32() = false
+//	Equal32(x) = true
+//	Equal32(NaN) = false
+//	Equal32(NaN, x) = false
+//	Equal32(x, NaN) = false
+//	Equal32(+Inf, +Inf) = true
+//	Equal32(-Inf, -Inf) = true
+func Equal32(x ...float32) bool {
+	if len(x) <= 0 {
+		return false
+	}
+	var a float32
+	for i, b := range x {
+		if math.IsNaN(float64(b)) {
+			return false
+		}
+		if i > 0 {
+			if !math.IsNaN(float64(a-b)) && (a > b || a < b) {
+				return false
+			}
+		}
+		a = b
+	}
+	return true
+}
+
+// Equal is synonym with Equal64.
+func Equal(x ...float64) bool {
+	return Equal64(x...)
+}
+
+// IsZero checks whether fraction of the given value is zero.
+// It may return true even exponential isn't zero.
+func IsZero(x float64) bool {
+	return math.Float64bits(x)<<12 == 0
+}
+
+func checkInvalidBase(base int) {
+	if base < MinBase || base > MaxBase {
+		panic("invalid base")
+	}
 }
