@@ -6,16 +6,43 @@ import (
 	"github.com/goinsane/xmath"
 )
 
-func ExampleStepper() {
-	s, err := xmath.NewStepper(2, 10, 0.1, 10, 5.21)
+func ExampleNewStepper() {
+	var err error
+	_, err = xmath.NewStepper(2, 10, 0.1, 3.01, 2.31)
+	fmt.Println(err)
+	_, err = xmath.NewStepper(2, 10, 0.105, 3.01, 2.31)
+	fmt.Println(err)
+	_, err = xmath.NewStepper(2, 10, 0.1, 3.015, 2.31)
+	fmt.Println(err)
+	_, err = xmath.NewStepper(2, 10, 0.1, 3.01, 2.315)
+	fmt.Println(err)
+	_, err = xmath.NewStepper(2, 10, 0.15, 3.01, 2.31)
+	fmt.Println(err)
+
+	// Output:
+	// <nil>
+	// step overflow
+	// max overflow
+	// min overflow
+	// range overflow
+}
+
+func ExampleStepper_Step() {
+	s, err := xmath.NewStepper(2, 10, 0.1, 3.01, 2.31)
 	if err != nil {
 		panic(err)
 	}
-	for i := -1; i < s.Count()+1; i++ {
+	for i := 0; i < s.Count(); i++ {
 		fmt.Println(s.Step(i))
 	}
-	fmt.Println(s.Normalize(4.945))
 
 	// Output:
-	// aa
+	// 2.31 <nil>
+	// 2.41 <nil>
+	// 2.51 <nil>
+	// 2.61 <nil>
+	// 2.71 <nil>
+	// 2.81 <nil>
+	// 2.91 <nil>
+	// 3.01 <nil>
 }
