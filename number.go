@@ -10,7 +10,7 @@ import (
 // It rounds the big.Float to half away from zero after all of writing operations.
 // A Number can be created with new(Number) or NewNumber and etc.
 // A Number which is created by new(Number) has precision 0 and base 10.
-// Both of Precision and base, can't change after the Number created.
+// Both of precision and base, can't change after the Number created.
 type Number struct {
 	prec int
 	base int
