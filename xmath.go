@@ -36,7 +36,7 @@ func FloorP(x float64, prec int) float64 {
 }
 
 // FloorPB returns the greatest value less than or equal to x with specified precision of base.
-// It panics unless 2 <= base <= 36.
+// It panics unless base is in valid range.
 func FloorPB(x float64, prec int, base int) float64 {
 	checkInvalidBase(base)
 	k := math.Pow(float64(base), float64(prec))
@@ -50,7 +50,7 @@ func CeilP(x float64, prec int) float64 {
 }
 
 // CeilPB returns the least value greater than or equal to x with specified precision of base.
-// It panics unless 2 <= base <= 36.
+// It panics unless base is in valid range.
 func CeilPB(x float64, prec int, base int) float64 {
 	checkInvalidBase(base)
 	k := math.Pow(float64(base), float64(prec))
@@ -69,7 +69,7 @@ func RoundP(x float64, prec int) float64 {
 }
 
 // RoundPB returns the nearest integer value, rounding half away from zero with specified precision of base.
-// It panics unless 2 <= base <= 36.
+// It panics unless base is in valid range.
 func RoundPB(x float64, prec int, base int) float64 {
 	checkInvalidBase(base)
 	k := math.Pow(float64(base), float64(prec))
