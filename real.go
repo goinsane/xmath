@@ -46,9 +46,14 @@ func NewDecimal(prec int) *Real {
 	return NewReal(prec, 10)
 }
 
-// NewHexdecimal returns a new Real with base 16.
-func NewHexdecimal(prec int) *Real {
+// NewHexadecimal returns a new Real with base 16.
+func NewHexadecimal(prec int) *Real {
 	return NewReal(prec, 16)
+}
+
+// NewHexdecimal is synonym with NewHexadecimal.
+func NewHexdecimal(prec int) *Real {
+	return NewHexadecimal(prec)
 }
 
 func (z *Real) init() {
