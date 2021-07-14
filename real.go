@@ -20,6 +20,7 @@ type Real struct {
 
 // NewReal returns a new Real with given precision and base.
 // Calling the NewReal, isn't necessary to create new Real.
+// It panics unless base is in valid range.
 func NewReal(prec, base int) *Real {
 	checkInvalidBase(base)
 	return &Real{
