@@ -48,14 +48,14 @@ func (z *Number) init() {
 	z.k = big.NewFloat(1)
 }
 
-func (x *Number) Base() int {
-	x.init()
-	return x.base
-}
-
 func (x *Number) Prec() int {
 	x.init()
 	return x.prec
+}
+
+func (x *Number) Base() int {
+	x.init()
+	return x.base
 }
 
 func (x *Number) Float() *big.Float {
