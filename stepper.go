@@ -16,7 +16,7 @@ var (
 	ErrStepperMinExceeded     = errors.New("min exceeded")
 )
 
-// Stepper is a utility to
+// Stepper is a utility to step and normalize floating point values by given precision and base.
 type Stepper struct {
 	prec       int
 	base       int
@@ -30,6 +30,9 @@ type Stepper struct {
 	count      int64
 }
 
+// NewStepper returns a new Stepper with given precision, base and given step, max, min.
+// Both of max and min can be infinity. In this case, the range of Stepper is infinity.
+// It panics unless base is in valid range.
 func NewStepper(prec, base int, step, max, min float64) (s *Stepper, err error) {
 	checkInvalidBase(base)
 	s = &Stepper{
@@ -37,7 +40,7 @@ func NewStepper(prec, base int, step, max, min float64) (s *Stepper, err error) 
 		base: base,
 	}
 	s.stepReal = s.newReal().SetFloat64(step)
-	if f, acc := s.stepReal.Float64(); f != step || acc != big.Exact {
+	if f, acc := s.stepReal.Float64(); f != step || acc != big.Exact || math.IsInf(step, 0) {
 		return nil, ErrStepperStepOverflow
 	} else {
 		s.step = f
@@ -53,6 +56,9 @@ func NewStepper(prec, base int, step, max, min float64) (s *Stepper, err error) 
 		return nil, ErrStepperMinOverflow
 	} else {
 		s.min = f
+	}
+	if s.maxReal.IsInf() && s.minReal.IsInf() && s.maxReal.Cmp(s.minReal) == 0 {
+		return nil, ErrStepperRangeOverflow
 	}
 	s.intrvlReal = s.newReal().Sub(s.maxReal, s.minReal)
 	r := s.newReal().Quo(s.intrvlReal, s.stepReal)
@@ -74,14 +80,18 @@ func (s *Stepper) newReal() *Real {
 	return NewReal(s.prec, s.base)
 }
 
+// Prec returns precision of the Stepper.
 func (s *Stepper) Prec() int {
 	return s.prec
 }
 
+// Base returns base of the Stepper.
 func (s *Stepper) Base() int {
 	return s.base
 }
 
+// Count is same with Count64 if count is less than or equal to MaxIntValue.
+// If count is greater than MaxIntValue, it returns MaxIntValue.
 func (s *Stepper) Count() int {
 	if s.count > MaxIntValue {
 		return MaxIntValue
@@ -89,14 +99,19 @@ func (s *Stepper) Count() int {
 	return int(s.count)
 }
 
+// Count64 returns number of step for given range.
+// If the range of Stepper is infinity, it returns 0.
 func (s *Stepper) Count64() int64 {
 	return s.count
 }
 
+// Step is same with Step64 except that Step indexes up to MaxIntValue.
 func (s *Stepper) Step(index int) (float64, error) {
 	return s.Step64(int64(index))
 }
 
+// Step64 returns proper step value by given index.
+// If the range of Stepper is infinity, step of index 0 is 0.
 func (s *Stepper) Step64(index int64) (float64, error) {
 	minReal := s.newReal()
 	if !s.intrvlReal.IsInf() {
@@ -115,6 +130,8 @@ func (s *Stepper) Step64(index int64) (float64, error) {
 	return f, nil
 }
 
+// Normalize returns normalized float value by proper index.
+// If the range of Stepper is infinity, alignment of steps is made to be as to provide step of index 0 is 0.
 func (s *Stepper) Normalize(f float64) (float64, error) {
 	minReal := s.newReal()
 	if !s.intrvlReal.IsInf() {
