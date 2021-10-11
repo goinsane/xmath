@@ -32,6 +32,38 @@ func RoundBigFloat(x *big.Float) *big.Int {
 	return FloorBigFloat(z.Add(z, big.NewFloat(0.5)))
 }
 
+// Int64BigInt returns the integer resulting from truncating x towards zero.
+// If math.MinInt64 <= x <= math.MaxInt64, the accuracy is big.Exact.
+// The result is (math.MinInt64, big.Above) for x < math.MinInt64, and (math.MaxInt64, big.Below) for x > math.MaxInt64.
+func Int64BigInt(x *big.Int) (int64, big.Accuracy) {
+	if x.IsInt64() {
+		return x.Int64(), big.Exact
+	}
+	switch t := x.Sign(); {
+	case t < 0:
+		return math.MinInt64, big.Above
+	case t > 0:
+		return math.MaxInt64, big.Below
+	}
+	return 0, big.Exact
+}
+
+// Uint64BigInt returns the integer resulting from truncating x towards zero.
+// If 0 <= x <= math.MaxUint64, the accuracy is big.Exact.
+// The result is (0, big.Above) for x < 0, and (math.MaxUint64, big.Below) for x > math.MaxUint64.
+func Uint64BigInt(x *big.Int) (uint64, big.Accuracy) {
+	if x.IsUint64() {
+		return x.Uint64(), big.Exact
+	}
+	switch t := x.Sign(); {
+	case t < 0:
+		return 0, big.Above
+	case t > 0:
+		return math.MaxUint64, big.Below
+	}
+	return 0, big.Exact
+}
+
 // IntBigRat returns the result of truncating x towards zero.
 // The accuracy is big.Exact if x.IsInt(); otherwise it is big.Below or big.Above.
 func IntBigRat(x *big.Rat) (*big.Int, big.Accuracy) {
