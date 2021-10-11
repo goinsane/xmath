@@ -64,7 +64,7 @@ func Int64BigRat(x *big.Rat) (int64, big.Accuracy) {
 
 // Uint64BigRat returns the integer resulting from truncating x towards zero.
 // If 0 <= x <= math.MaxUint64, the accuracy is like IntBigRat.
-// The result is (math.MaxUint64, big.Below) for x > math.MaxUint64.
+// The result is (0, big.Above) for x < 0, and (math.MaxUint64, big.Below) for x > math.MaxUint64.
 func Uint64BigRat(x *big.Rat) (uint64, big.Accuracy) {
 	n, a := IntBigRat(x)
 	if n.IsUint64() {
