@@ -40,7 +40,7 @@ func FloorP(x float64, prec int) float64 {
 // FloorPB returns the greatest value less than or equal to x with specified precision of base.
 // It panics unless base is in valid range.
 func FloorPB(x float64, prec int, base int) float64 {
-	checkInvalidBase(base)
+	panicForInvalidBase(base)
 	k := math.Pow(float64(base), float64(prec))
 	return math.Floor(x*k) / k
 }
@@ -54,7 +54,7 @@ func CeilP(x float64, prec int) float64 {
 // CeilPB returns the least value greater than or equal to x with specified precision of base.
 // It panics unless base is in valid range.
 func CeilPB(x float64, prec int, base int) float64 {
-	checkInvalidBase(base)
+	panicForInvalidBase(base)
 	k := math.Pow(float64(base), float64(prec))
 	return math.Ceil(x*k) / k
 }
@@ -73,7 +73,7 @@ func RoundP(x float64, prec int) float64 {
 // RoundPB returns the nearest integer value, rounding half away from zero with specified precision of base.
 // It panics unless base is in valid range.
 func RoundPB(x float64, prec int, base int) float64 {
-	checkInvalidBase(base)
+	panicForInvalidBase(base)
 	k := math.Pow(float64(base), float64(prec))
 	return math.Floor(x*k+0.5) / k
 }
@@ -729,7 +729,7 @@ func AvgUint2(x ...uint64) (avg uint64, overflow bool) {
 	return
 }
 
-func checkInvalidBase(base int) {
+func panicForInvalidBase(base int) {
 	if base < MinBase || base > MaxBase {
 		panic("invalid base")
 	}
