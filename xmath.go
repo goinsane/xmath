@@ -23,10 +23,12 @@ const (
 	MaxUint16Value = 1<<16 - 1
 	MaxUint32Value = 1<<32 - 1
 	MaxUint64Value = 1<<64 - 1
-	MaxIntValue    = 1<<(UintSize-1) - 1
-	MinIntValue    = -1 << (UintSize - 1)
-	MaxUintValue   = 1<<UintSize - 1
-	UintSize       = 32 << (^uint(0) >> 32 & 1)
+
+	MaxIntValue  = 1<<(UintSize-1) - 1
+	MinIntValue  = -1 << (UintSize - 1)
+	MaxUintValue = 1<<UintSize - 1
+
+	UintSize = 32 << (^uint(0) >> 32 & 1)
 )
 
 // FloorP returns the greatest value less than or equal to x with specified decimal precision.
@@ -585,8 +587,156 @@ func IsZero(x float64) bool {
 	return math.Float64bits(x)<<12 == 0
 }
 
+// Zero returns zero floating point value by given sign.
+//	-0.0 if sign <  0
+//	+0.0 if sign is 0
+//	+0.0 if sign >  0
+func Zero(sign int) float64 {
+	return math.Copysign(0, float64(sign))
+}
+
+// Sign returns:
+//	-1 if x <   0
+//	 0 if x is ±0
+//	+1 if x >   0
+// Sign panics if x is NaN.
+func Sign(x float64) int {
+	if math.IsNaN(x) {
+		panicForNaN(x)
+	}
+	switch {
+	case x < 0:
+		return -1
+	case x > 0:
+		return 1
+	}
+	return 0
+}
+
+// SignInt returns:
+//	-1 if x <   0
+//	 0 if x is  0
+//	+1 if x >   0
+func SignInt(x int64) int {
+	switch {
+	case x < 0:
+		return -1
+	case x > 0:
+		return 1
+	}
+	return 0
+}
+
+// Sum returns the sum of x...
+func Sum(x ...float64) (sum float64) {
+	for _, y := range x {
+		sum += y
+	}
+	return
+}
+
+// Avg returns the arithmetic mean of x...
+func Avg(x ...float64) (avg float64) {
+	k := float64(len(x))
+	for _, y := range x {
+		avg += y / k
+	}
+	return
+}
+
+// SumInt returns the floating point of sum of x...
+func SumInt(x ...int64) (sum float64) {
+	for _, y := range x {
+		sum += float64(y)
+	}
+	return
+}
+
+// AvgInt returns the floating point of arithmetic mean of x...
+func AvgInt(x ...int64) (avg float64) {
+	k := float64(len(x))
+	for _, y := range x {
+		avg += float64(y) / k
+	}
+	return
+}
+
+// SumUint returns the floating point of sum of x...
+func SumUint(x ...uint64) (sum float64) {
+	for _, y := range x {
+		sum += float64(y)
+	}
+	return
+}
+
+// AvgUint returns the floating point of arithmetic mean of x...
+func AvgUint(x ...uint64) (avg float64) {
+	k := float64(len(x))
+	for _, y := range x {
+		avg += float64(y) / k
+	}
+	return
+}
+
+// SumInt2 returns the sum of x...
+// If the result overflows, it returns overflow is true.
+func SumInt2(x ...int64) (sum int64, overflow bool) {
+	var last int64
+	for _, y := range x {
+		sum += y
+		signLast, signSum, signY := SignInt(last), SignInt(sum), SignInt(y)
+		if !overflow && signLast != signSum && signLast == signY {
+			overflow = true
+		}
+		last = sum
+	}
+	return
+}
+
+// AvgInt2 returns the arithmetic mean of x...
+// If the result overflows, it returns overflow is true.
+func AvgInt2(x ...int64) (avg int64, overflow bool) {
+	var sum int64
+	sum, overflow = SumInt2(x...)
+	if count := len(x); count > 0 {
+		avg = sum / int64(count)
+	}
+	return
+}
+
+// SumUint2 returns the sum of x...
+// If the result overflows, it returns overflow is true.
+func SumUint2(x ...uint64) (sum uint64, overflow bool) {
+	var last uint64
+	for _, y := range x {
+		sum += y
+		if !overflow && sum < last {
+			overflow = true
+		}
+		last = sum
+	}
+	return
+}
+
+// AvgUint2 returns the arithmetic mean of x...
+// If the result overflows, it returns overflow is true.
+func AvgUint2(x ...uint64) (avg uint64, overflow bool) {
+	var sum uint64
+	sum, overflow = SumUint2(x...)
+	if count := len(x); count > 0 {
+		avg = sum / uint64(count)
+	}
+	return
+}
+
 func checkInvalidBase(base int) {
 	if base < MinBase || base > MaxBase {
 		panic("invalid base")
+	}
+}
+
+func panicForNaN(x float64) {
+	if math.IsNaN(x) {
+		panic("NaN value")
 	}
 }
