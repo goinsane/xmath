@@ -17,6 +17,10 @@ To run all tests, please use the following command:
 
     go test -v
 
+To run all examples, please use the following command:
+
+    go test -v -run=^Example
+
 To run all benchmarks, please use the following command:
 
     go test -v -run=^Benchmark -bench=.
