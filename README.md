@@ -9,7 +9,8 @@ Please see [godoc](https://pkg.go.dev/github.com/goinsane/xmath).
 
 To run any example, please use the command like the following:
 
-    go run examples/example1.go
+    cd examples/
+    go run example1.go
 
 ## Tests
 
