@@ -1,4 +1,5 @@
-// +build ignore
+//go:build examples
+// +build examples
 
 package main
 

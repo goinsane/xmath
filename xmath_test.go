@@ -310,6 +310,178 @@ func ExampleIsZero() {
 	// is remainder of -2.5/0.4 zero: false
 }
 
+func ExampleZero() {
+	var sign int
+
+	sign = -1
+	fmt.Printf("zero with sign %+d: %+.2f\n", sign, xmath.Zero(sign))
+
+	sign = 0
+	fmt.Printf("zero with sign %+d: %+.2f\n", sign, xmath.Zero(sign))
+
+	sign = 1
+	fmt.Printf("zero with sign %+d: %+.2f\n", sign, xmath.Zero(sign))
+
+	// Output:
+	// zero with sign -1: -0.00
+	// zero with sign +0: +0.00
+	// zero with sign +1: +0.00
+}
+
+func ExampleSign() {
+	var x float64
+
+	x = -1.3
+	fmt.Printf("sign of %+.2f: %+d\n", x, xmath.Sign(x))
+
+	x = xmath.Zero(-1)
+	fmt.Printf("sign of %+.2f: %+d\n", x, xmath.Sign(x))
+
+	x = xmath.Zero(+1)
+	fmt.Printf("sign of %+.2f: %+d\n", x, xmath.Sign(x))
+
+	x = 2.7
+	fmt.Printf("sign of %+.2f: %+d\n", x, xmath.Sign(x))
+
+	// Output:
+	// sign of -1.30: -1
+	// sign of -0.00: +0
+	// sign of +0.00: +0
+	// sign of +2.70: +1
+}
+
+func ExampleSignInt() {
+	var x int64
+
+	x = -3
+	fmt.Printf("sign of integer %+d: %+d\n", x, xmath.SignInt(x))
+
+	x = 0
+	fmt.Printf("sign of integer %+d: %+d\n", x, xmath.SignInt(x))
+
+	x = 7
+	fmt.Printf("sign of integer %+d: %+d\n", x, xmath.SignInt(x))
+
+	// Output:
+	// sign of integer -3: -1
+	// sign of integer +0: +0
+	// sign of integer +7: +1
+}
+
+func ExampleSum() {
+	x := []float64{-5.6, 2.1, 4.5, -10.9, -3.4}
+	fmt.Printf("sum of %v: %v\n", x, xmath.Sum(x...))
+
+	// Output:
+	// sum of [-5.6 2.1 4.5 -10.9 -3.4]: -13.3
+}
+
+func ExampleAvg() {
+	x := []float64{-5.6, 2.1, 4.5, -10.9, -3.4}
+	fmt.Printf("avg of %v: %v\n", x, xmath.Avg(x...))
+
+	// Output:
+	// avg of [-5.6 2.1 4.5 -10.9 -3.4]: -2.66
+}
+
+func ExampleSumInt() {
+	x := []int64{-5, 2, 4, -10, -3}
+	fmt.Printf("sum of integers %v: %v\n", x, xmath.SumInt(x...))
+
+	// Output:
+	// sum of integers [-5 2 4 -10 -3]: -12
+}
+
+func ExampleAvgInt() {
+	x := []int64{-5, 2, 4, -10, -3}
+	fmt.Printf("avg of integers %v: %v\n", x, xmath.AvgInt(x...))
+
+	// Output:
+	// avg of integers [-5 2 4 -10 -3]: -2.4
+}
+
+func ExampleSumUint() {
+	x := []uint64{5, 2, 4, 10, 3}
+	fmt.Printf("sum of unsigned integers %v: %v\n", x, xmath.SumUint(x...))
+
+	// Output:
+	// sum of unsigned integers [5 2 4 10 3]: 24
+}
+
+func ExampleAvgUint() {
+	x := []uint64{5, 2, 4, 10, 3}
+	fmt.Printf("avg of unsigned integers %v: %v\n", x, xmath.AvgUint(x...))
+
+	// Output:
+	// avg of unsigned integers [5 2 4 10 3]: 4.8
+}
+
+func ExampleSumInt2() {
+	x := []int64{-5, 2, 4, -10, -3}
+	r, o := xmath.SumInt2(x...)
+	fmt.Printf("sum of integers %v: %v overflow %v\n", x, r, o)
+
+	x = []int64{5, math.MaxInt64, -2}
+	r, o = xmath.SumInt2(x...)
+	fmt.Printf("sum of integers %v: %v overflow %v\n", x, r, o)
+
+	x = []int64{-7, math.MinInt64, 1}
+	r, o = xmath.SumInt2(x...)
+	fmt.Printf("sum of integers %v: %v overflow %v\n", x, r, o)
+
+	// Output:
+	// sum of integers [-5 2 4 -10 -3]: -12 overflow false
+	// sum of integers [5 9223372036854775807 -2]: -9223372036854775806 overflow true
+	// sum of integers [-7 -9223372036854775808 1]: 9223372036854775802 overflow true
+}
+
+func ExampleAvgInt2() {
+	x := []int64{-5, 2, 4, -10, -3}
+	r, o := xmath.AvgInt2(x...)
+	fmt.Printf("avg of integers %v: %v overflow %v\n", x, r, o)
+
+	x = []int64{5, math.MaxInt64, -2}
+	r, o = xmath.AvgInt2(x...)
+	fmt.Printf("avg of integers %v: %v overflow %v\n", x, r, o)
+
+	x = []int64{-7, math.MinInt64, 1}
+	r, o = xmath.AvgInt2(x...)
+	fmt.Printf("avg of integers %v: %v overflow %v\n", x, r, o)
+
+	// Output:
+	// avg of integers [-5 2 4 -10 -3]: -2 overflow false
+	// avg of integers [5 9223372036854775807 -2]: -3074457345618258602 overflow true
+	// avg of integers [-7 -9223372036854775808 1]: 3074457345618258600 overflow true
+}
+
+func ExampleSumUint2() {
+	x := []uint64{5, 2, 4, 10, 3}
+	r, o := xmath.SumUint2(x...)
+	fmt.Printf("sum of unsigned integers %v: %v overflow %v\n", x, r, o)
+
+	x = []uint64{5, math.MaxUint64}
+	r, o = xmath.SumUint2(x...)
+	fmt.Printf("sum of unsigned integers %v: %v overflow %v\n", x, r, o)
+
+	// Output:
+	// sum of unsigned integers [5 2 4 10 3]: 24 overflow false
+	// sum of unsigned integers [5 18446744073709551615]: 4 overflow true
+}
+
+func ExampleAvgUint2() {
+	x := []uint64{5, 2, 4, 10, 3}
+	r, o := xmath.AvgUint2(x...)
+	fmt.Printf("avg of unsigned integers %v: %v overflow %v\n", x, r, o)
+
+	x = []uint64{5, math.MaxUint64}
+	r, o = xmath.AvgUint2(x...)
+	fmt.Printf("avg of unsigned integers %v: %v overflow %v\n", x, r, o)
+
+	// Output:
+	// avg of unsigned integers [5 2 4 10 3]: 4 overflow false
+	// avg of unsigned integers [5 18446744073709551615]: 2 overflow true
+}
+
 func Example_example1() {
 	fmt.Printf("Pi is %v\n", math.Pi)
 	fmt.Printf("Square root of 2 (Sqrt2) is %v\n", math.Sqrt2)

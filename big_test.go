@@ -59,6 +59,92 @@ func ExampleRoundBigFloat() {
 	// round of -9: -9
 }
 
+func ExampleInt64BigInt() {
+	var x *big.Int
+	var k int64
+	var acc big.Accuracy
+
+	x = big.NewInt(49)
+	k, acc = xmath.Int64BigInt(x)
+	fmt.Printf("int64 of %v: %v acc=%v\n", x, k, acc)
+
+	x = big.NewInt(-27)
+	k, acc = xmath.Int64BigInt(x)
+	fmt.Printf("int64 of %v: %v acc=%v\n", x, k, acc)
+
+	x = big.NewInt(math.MaxInt64)
+	k, acc = xmath.Int64BigInt(x)
+	fmt.Printf("int64 of MaxInt64=%v: %v acc=%v\n", x, k, acc)
+
+	x = new(big.Int).Add(big.NewInt(math.MaxInt64), big.NewInt(5))
+	k, acc = xmath.Int64BigInt(x)
+	fmt.Printf("int64 of MaxInt64+5=%v: %v acc=%v\n", x, k, acc)
+
+	x = big.NewInt(math.MinInt64)
+	k, acc = xmath.Int64BigInt(x)
+	fmt.Printf("int64 of MinInt64=%v: %v acc=%v\n", x, k, acc)
+
+	x = new(big.Int).Sub(big.NewInt(math.MinInt64), big.NewInt(7))
+	k, acc = xmath.Int64BigInt(x)
+	fmt.Printf("int64 of MinInt64-7=%v: %v acc=%v\n", x, k, acc)
+
+	// Output:
+	// int64 of 49: 49 acc=Exact
+	// int64 of -27: -27 acc=Exact
+	// int64 of MaxInt64=9223372036854775807: 9223372036854775807 acc=Exact
+	// int64 of MaxInt64+5=9223372036854775812: 9223372036854775807 acc=Below
+	// int64 of MinInt64=-9223372036854775808: -9223372036854775808 acc=Exact
+	// int64 of MinInt64-7=-9223372036854775815: -9223372036854775808 acc=Above
+}
+
+func ExampleUint64BigInt() {
+	var x *big.Int
+	var k uint64
+	var acc big.Accuracy
+
+	x = big.NewInt(49)
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of %v: %v acc=%v\n", x, k, acc)
+
+	x = big.NewInt(-27)
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of %v: %v acc=%v\n", x, k, acc)
+
+	x = big.NewInt(math.MaxInt64)
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of MaxInt64=%v: %v acc=%v\n", x, k, acc)
+
+	x = new(big.Int).Add(big.NewInt(math.MaxInt64), big.NewInt(5))
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of MaxInt64+5=%v: %v acc=%v\n", x, k, acc)
+
+	x = big.NewInt(math.MinInt64)
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of MinInt64=%v: %v acc=%v\n", x, k, acc)
+
+	x = new(big.Int).Sub(big.NewInt(math.MinInt64), big.NewInt(7))
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of MinInt64-7=%v: %v acc=%v\n", x, k, acc)
+
+	x = new(big.Int).SetUint64(math.MaxUint64)
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of MaxUint64=%v: %v acc=%v\n", x, k, acc)
+
+	x = new(big.Int).Add(new(big.Int).SetUint64(math.MaxUint64), big.NewInt(3))
+	k, acc = xmath.Uint64BigInt(x)
+	fmt.Printf("uint64 of MaxUint64+3=%v: %v acc=%v\n", x, k, acc)
+
+	// Output:
+	// uint64 of 49: 49 acc=Exact
+	// uint64 of -27: 0 acc=Above
+	// uint64 of MaxInt64=9223372036854775807: 9223372036854775807 acc=Exact
+	// uint64 of MaxInt64+5=9223372036854775812: 9223372036854775812 acc=Exact
+	// uint64 of MinInt64=-9223372036854775808: 0 acc=Above
+	// uint64 of MinInt64-7=-9223372036854775815: 0 acc=Above
+	// uint64 of MaxUint64=18446744073709551615: 18446744073709551615 acc=Exact
+	// uint64 of MaxUint64+3=18446744073709551618: 18446744073709551615 acc=Below
+}
+
 func ExampleIntBigRat() {
 	var n *big.Int
 	var acc big.Accuracy

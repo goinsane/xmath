@@ -22,7 +22,7 @@ type Real struct {
 // Calling the NewReal, isn't necessary to create new Real.
 // It panics unless base is in valid range.
 func NewReal(prec, base int) *Real {
-	checkInvalidBase(base)
+	panicForInvalidBase(base)
 	return &Real{
 		prec: prec,
 		base: base,

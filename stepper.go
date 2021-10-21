@@ -34,7 +34,7 @@ type Stepper struct {
 // Both of max and min can be infinity. In this case, the range of Stepper is infinity.
 // It panics unless base is in valid range.
 func NewStepper(prec, base int, step, max, min float64) (s *Stepper, err error) {
-	checkInvalidBase(base)
+	panicForInvalidBase(base)
 	s = &Stepper{
 		prec: prec,
 		base: base,
