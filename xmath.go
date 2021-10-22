@@ -601,9 +601,7 @@ func Zero(sign int) float64 {
 //	+1 if x >   0
 // Sign panics if x is NaN.
 func Sign(x float64) int {
-	if math.IsNaN(x) {
-		panicForNaN(x)
-	}
+	panicForNaN(x)
 	switch {
 	case x < 0:
 		return -1
