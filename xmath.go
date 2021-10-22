@@ -728,7 +728,7 @@ func AvgUint2(x ...uint64) (avg uint64, overflow bool) {
 }
 
 func panicForInvalidBase(base int) {
-	if base < MinBase || base > MaxBase {
+	if !(MinBase <= base && base <= MaxBase) {
 		panic("invalid base")
 	}
 }
