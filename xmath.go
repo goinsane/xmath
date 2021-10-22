@@ -614,9 +614,9 @@ func Sign(x float64) int {
 }
 
 // SignInt returns:
-//	-1 if x <   0
-//	 0 if x is  0
-//	+1 if x >   0
+//	-1 if x <  0
+//	 0 if x is 0
+//	+1 if x >  0
 func SignInt(x int64) int {
 	switch {
 	case x < 0:
