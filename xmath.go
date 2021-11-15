@@ -601,9 +601,7 @@ func Zero(sign int) float64 {
 //	+1 if x >   0
 // Sign panics if x is NaN.
 func Sign(x float64) int {
-	if math.IsNaN(x) {
-		panicForNaN(x)
-	}
+	panicForNaN(x)
 	switch {
 	case x < 0:
 		return -1
@@ -614,9 +612,9 @@ func Sign(x float64) int {
 }
 
 // SignInt returns:
-//	-1 if x <   0
-//	 0 if x is  0
-//	+1 if x >   0
+//	-1 if x <  0
+//	 0 if x is 0
+//	+1 if x >  0
 func SignInt(x int64) int {
 	switch {
 	case x < 0:
@@ -730,7 +728,7 @@ func AvgUint2(x ...uint64) (avg uint64, overflow bool) {
 }
 
 func panicForInvalidBase(base int) {
-	if base < MinBase || base > MaxBase {
+	if !(MinBase <= base && base <= MaxBase) {
 		panic("invalid base")
 	}
 }
